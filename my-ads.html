@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=420, initial-scale=1.0">
+  <title>המודעות שלי - מודעות הצפון</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Heebo', Arial, sans-serif; background: #f7fafc; margin: 0; }
+    .my-ads-container {
+      max-width: 700px; margin: 38px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 14px #e0e0e0;
+      padding: 32px 28px 24px 28px;
+    }
+    h2 { text-align: center; color: #0099cc; margin-bottom: 22px; }
+    .ads-list { list-style: none; padding: 0; margin: 0; }
+    .ad-item {
+      background: #f9f9f9; border-radius: 12px; box-shadow: 0 1px 7px #e0e0e0;
+      margin-bottom: 16px; padding: 18px 16px; display: flex; gap: 18px; align-items: flex-start;
+    }
+    .ad-thumb { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; background: #e0e0e0; }
+    .ad-info { flex: 1; }
+    .ad-title { font-size: 18px; color: #0099cc; font-weight: bold; margin-bottom: 6px; }
+    .ad-meta { font-size: 15px; color: #555; margin-bottom: 7px; }
+    .ad-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .ad-btn { border: none; border-radius: 8px; padding: 7px 14px; font-size: 15px; cursor: pointer; background: #0099cc; color: #fff; font-weight: bold; transition: background 0.2s; }
+    .ad-btn.edit { background: #ffd600; color: #333; }
+    .ad-btn.delete { background: #ff7043; }
+    .ad-btn:disabled { background: #ccc; }
+    .no-ads { text-align: center; color: #999; margin-top: 40px; }
+  </style>
+</head>
+<body>
+  <div class="my-ads-container">
+    <h2>המודעות שלי</h2>
+    <ul class="ads-list" id="adsList">
+      <!-- כאן יופיעו המודעות של המשתמש -->
+    </ul>
+    <div class="no-ads" id="noAdsMsg" style="display:none;">לא נמצאו מודעות. לחץ <a href="advertiser.html">כאן</a> לפרסום מודעה חדשה.</div>
+  </div>
+  <script>
+    // טען מודעות מה-localStorage
+    function getAllAds() {
+      return JSON.parse(localStorage.getItem('ads') || '[]');
+    }
+    function saveAllAds(ads) {
+      localStorage.setItem('ads', JSON.stringify(ads));
+    }
+    const adsList = document.getElementById('adsList');
+    const noAdsMsg = document.getElementById('noAdsMsg');
+    function renderAds(ads) {
+      adsList.innerHTML = '';
+      if (ads.length === 0) {
+        noAdsMsg.style.display = 'block';
+        return;
+      }
+      noAdsMsg.style.display = 'none';
+      ads.forEach(ad => {
+        const li = document.createElement('li');
+        li.className = 'ad-item';
+        li.innerHTML = `
+          <img class="ad-thumb" src="${ad.img || 'demo-a4.png'}" alt="תמונה">
+          <div class="ad-info">
+            <div class="ad-title">${ad.title}</div>
+            <div class="ad-meta">${ad.category || ''} | ${ad.city || ''} ${ad.neighborhood ? ' - ' + ad.neighborhood : ''} | ${ad.size || ''} | ${ad.date || ''}</div>
+            <div class="ad-actions">
+              <button class="ad-btn edit" onclick="editAd(${ad.id})">ערוך</button>
+              <button class="ad-btn delete" onclick="deleteAd(${ad.id})">מחק</button>
+            </div>
+          </div>
+        `;
+        adsList.appendChild(li);
+      });
+    }
+    function editAd(id) {
+      const ads = getAllAds();
+      const ad = ads.find(a => a.id === id);
+      if (!ad) return;
+      // פתח טופס עריכה דינמי (popup)
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'rgba(0,0,0,0.25)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.innerHTML = `
+        <form id="editAdForm" style="background:#fff;padding:20px 28px;border-radius:14px;min-width:320px;max-width:90vw;">
+          <h3>עריכת מודעה</h3>
+          <label>כותרת: <input type="text" name="title" value="${ad.title||''}" required></label><br>
+          <label>קטגוריה: <input type="text" name="category" value="${ad.category||''}" required></label><br>
+          <label>עיר: <input type="text" name="city" value="${ad.city||''}" required></label><br>
+          <label>שכונה: <input type="text" name="neighborhood" value="${ad.neighborhood||''}"></label><br>
+          <label>גודל: <input type="text" name="size" value="${ad.size||''}"></label><br>
+          <label>טלפון: <input type="text" name="phone" value="${ad.phone||''}" required></label><br>
+          <label>קישור: <input type="text" name="link" value="${ad.link||''}"></label><br>
+          <label>אימייל: <input type="email" name="email" value="${ad.email||''}"></label><br>
+          <button type="submit" class="ad-btn edit">שמור</button>
+          <button type="button" class="ad-btn cancel" id="cancelEdit">ביטול</button>
+        </form>
+      `;
+      document.body.appendChild(overlay);
+      document.getElementById('cancelEdit').onclick = () => overlay.remove();
+      document.getElementById('editAdForm').onsubmit = function(e) {
+        e.preventDefault();
+        ad.title = this.title.value;
+        ad.category = this.category.value;
+        ad.city = this.city.value;
+        ad.neighborhood = this.neighborhood.value;
+        ad.size = this.size.value;
+        ad.phone = this.phone.value;
+        ad.link = this.link.value;
+        ad.email = this.email.value;
+        saveAllAds(ads);
+        overlay.remove();
+        renderAds(ads);
+      };
+    }
+    function deleteAd(id) {
+      if (confirm('האם למחוק את המודעה?')) {
+        let ads = getAllAds();
+        ads = ads.filter(ad => ad.id !== id);
+        saveAllAds(ads);
+        renderAds(ads);
+      }
+    }
+    renderAds(getAllAds());
+  </script>
+</body>
+</html>

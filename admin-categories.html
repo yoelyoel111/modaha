@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=420, initial-scale=1.0">
+  <title>ניהול קטגוריות - מודעות הצפון</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Heebo', Arial, sans-serif; background: #f7fafc; margin: 0; }
+    .categories-admin-container {
+      max-width: 600px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 14px #e0e0e0;
+      padding: 32px 28px 24px 28px;
+    }
+    h2 { text-align: center; color: #0099cc; margin-bottom: 18px; }
+    .categories-list { list-style: none; padding: 0; margin: 0; }
+    .category-item {
+      display: flex; align-items: center; gap: 12px;
+      background: #f4f9fd; border-radius: 10px; margin-bottom: 10px;
+      padding: 12px 10px; cursor: grab; box-shadow: 0 1px 7px #e0e0e0;
+      border: 2px solid transparent; transition: border 0.2s;
+    }
+    .category-item.dragging { opacity: 0.5; border: 2px dashed #0099cc; }
+    .category-color {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid #bbb;
+      cursor: pointer; margin-left: 5px;
+    }
+    .category-icon { font-size: 22px; margin-left: 5px; cursor: pointer; }
+    .category-name { flex: 1; font-size: 17px; }
+    .cat-actions { display: flex; gap: 6px; }
+    .cat-btn { border: none; border-radius: 7px; padding: 5px 12px; font-size: 14px; cursor: pointer; background: #ff7043; color: #fff; font-weight: bold; }
+    .add-cat-form { display: flex; gap: 8px; margin-bottom: 20px; }
+    .add-cat-form input { font-size: 16px; padding: 7px 8px; border-radius: 7px; border: 1px solid #bbb; }
+    .add-cat-form button { background: #0099cc; color: #fff; border: none; border-radius: 7px; padding: 7px 16px; font-size: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="categories-admin-container">
+    <h2>ניהול קטגוריות</h2>
+    <form class="add-cat-form" onsubmit="addCategory(event)">
+      <input type="text" id="newCatName" placeholder="שם קטגוריה" required>
+      <input type="color" id="newCatColor" value="#0099cc" title="בחר צבע">
+      <input type="text" id="newCatIcon" placeholder="אייקון (אימוג'י)" maxlength="2">
+      <button type="submit">➕ הוסף</button>
+    </form>
+    <ul class="categories-list" id="categoriesList">
+      <!-- קטגוריות יופיעו כאן -->
+    </ul>
+    <button id="saveCategoriesBtn" style="margin-top:18px;background:#0099cc;color:#fff;border:none;border-radius:7px;padding:10px 22px;font-size:16px;font-weight:bold;cursor:pointer;width:100%;">💾 שמור סדר קטגוריות</button>
+  </div>
+  <script src="categories-data.js"></script>
+  <script>
+    // נטען מהקובץ המשותף
+    let categories = [];
+const savedOrder = localStorage.getItem('categoriesOrder');
+if (savedOrder) {
+  try {
+    categories = JSON.parse(savedOrder);
+  } catch(e) {
+    categories = window.categoriesData ? [...window.categoriesData] : [];
+  }
+} else {
+  categories = window.categoriesData ? [...window.categoriesData] : [];
+}
+
+let dragSrcIdx = null;
+function renderCategories() {
+  const list = document.getElementById('categoriesList');
+  list.innerHTML = '';
+  categories.forEach((cat, idx) => {
+    const li = document.createElement('li');
+    li.className = 'category-item';
+    li.draggable = true;
+    li.ondragstart = e => { dragSrcIdx = idx; li.classList.add('dragging'); };
+    li.ondragend = e => { dragSrcIdx = null; li.classList.remove('dragging'); };
+    li.ondragover = e => { e.preventDefault(); };
+    li.ondrop = e => { e.preventDefault(); if (dragSrcIdx !== null && dragSrcIdx !== idx) { const moved = categories.splice(dragSrcIdx, 1)[0]; categories.splice(idx, 0, moved); renderCategories(); } };
+    li.innerHTML = `
+      <span class="category-color" style="background:${cat.color}" onclick="changeColor(${idx})" title="שנה צבע"></span>
+      <span class="category-icon" style="font-size:22px; margin-left:5px; cursor:pointer;" onclick="changeIcon(${idx})" title="שנה אייקון">${cat.icon||''}</span>
+      <span class="category-name">${cat.name}</span>
+      <span class="cat-actions">
+        <button class="cat-btn" onclick="deleteCategory(${idx})">מחק</button>
+      </span>
+    `;
+    list.appendChild(li);
+  });
+}
+
+    function addCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCatName').value.trim();
+      const color = document.getElementById('newCatColor').value;
+      const icon = document.getElementById('newCatIcon').value.trim();
+      if (!name) return;
+      categories.push({name, color, icon});
+      renderCategories();
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatIcon').value = '';
+    }
+    function deleteCategory(idx) {
+      if (confirm('למחוק את הקטגוריה?')) { categories.splice(idx, 1); renderCategories(); }
+    }
+    function changeColor(idx) {
+      const color = prompt('הזן קוד צבע (HEX):', categories[idx].color);
+      if (color) { categories[idx].color = color; renderCategories(); }
+    }
+    function changeIcon(idx) {
+      const icon = prompt('הזן אייקון (אימוג׳י):', categories[idx].icon);
+      if (icon) { categories[idx].icon = icon; renderCategories(); }
+    }
+    renderCategories();
+  document.getElementById('saveCategoriesBtn').onclick = function() {
+  localStorage.setItem('categoriesOrder', JSON.stringify(categories));
+  alert('הסדר נשמר! (נשמר ל-localStorage)');
+  location.reload();
+};
+</script>
+</body>
+</html>

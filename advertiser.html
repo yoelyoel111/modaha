@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=420, initial-scale=1.0">
+  <title>פרסום מודעה - מודעות הצפון</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Heebo', Arial, sans-serif; background: #f7fafc; margin: 0; }
+    .ad-form-container {
+      max-width: 520px; margin: 40px auto; background: #fff; border-radius: 18px; box-shadow: 0 2px 14px #e0e0e0;
+      padding: 32px 28px 24px 28px;
+    }
+    h2 { text-align: center; color: #0099cc; margin-bottom: 18px; }
+    label { display: block; margin-bottom: 6px; color: #222; font-weight: 500; }
+    input, select, textarea {
+      width: 100%; font-size: 17px; padding: 8px 10px; margin-bottom: 16px; border-radius: 8px; border: 1px solid #bbb; background: #f9f9f9;
+    }
+    textarea { min-height: 60px; resize: vertical; }
+    .ad-size-options { display: flex; gap: 10px; margin-bottom: 16px; }
+    .ad-size-options label { font-weight: normal; }
+    .dynamic-fields { margin-bottom: 18px; }
+    .dynamic-fields input { width: calc(100% - 60px); display: inline-block; }
+    .dynamic-fields button { margin-right: 6px; }
+    .preview-img { width: 100%; max-height: 220px; object-fit: contain; border-radius: 10px; background: #f0f0f0; margin-bottom: 14px; }
+    .ad-actions { display: flex; justify-content: space-between; gap: 10px; }
+    .ad-btn { border: none; border-radius: 8px; padding: 9px 16px; font-size: 16px; cursor: pointer; background: #0099cc; color: #fff; font-weight: bold; transition: background 0.2s; }
+    .ad-btn.cancel { background: #bbb; color: #fff; }
+    .ad-btn:disabled { background: #ccc; }
+    .google-login { background: #fff; color: #0099cc; border: 1px solid #0099cc; margin-bottom: 18px; }
+    .google-login img { height: 22px; vertical-align: middle; margin-left: 7px; }
+  </style>
+</head>
+<body>
+  <div class="ad-form-container">
+    <h2>פרסם מודעה חדשה</h2>
+    <button class="ad-btn google-login"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> התחברות עם Google</button>
+    <form id="adForm">
+      <label for="adTitle">כותרת המודעה</label>
+      <input type="text" id="adTitle" name="adTitle" maxlength="60" required>
+
+      <label for="adCategory">קטגוריה</label>
+      <select id="adCategory" name="adCategory" required>
+        <option value="">בחר קטגוריה...</option>
+        <option>פסח</option>
+        <option>הובלות</option>
+        <option>מסעדות</option>
+        <option>קייטרינג</option>
+        <option>טיפול לסוגיו</option>
+        <option>ריהוט</option>
+        <option>עיצוב הבית</option>
+        <option>דרושים</option>
+        <option>ביגוד</option>
+        <option>הנעלה</option>
+        <option>חסד</option>
+        <option>פינות ישיבה</option>
+        <option>נופש</option>
+        <option>ציוד משרדי</option>
+        <option>ציוד לגנים</option>
+        <option>נשים</option>
+        <option>משלוחים</option>
+        <option>בריאות</option>
+        <option>מכון כושר</option>
+        <option>דיור</option>
+        <option>רואי חשבון</option>
+        <option>עורכי דין</option>
+        <option>הרצאות</option>
+        <option>צילום</option>
+        <option>מחשבים</option>
+        <option>סלולר</option>
+        <option>שיפוצים</option>
+        <option>חינוך</option>
+        <option>רפואה טבעית</option>
+        <option>השכרת רכב</option>
+        <option>תחבורה</option>
+        <option>יד 2</option>
+        <option>השבת אבידה</option>
+      </select>
+
+      <div id="cityNeighborhoodBlock"></div>
+
+      <label>גודל מודעה</label>
+      <div class="ad-size-options">
+        <label><input type="radio" name="adSize" value="A4" checked> A4</label>
+        <label><input type="radio" name="adSize" value="half"> חצי A4</label>
+        <label><input type="radio" name="adSize" value="quarter"> רבע A4</label>
+      </div>
+
+      <label for="adImage">קובץ מודעה (A4 בלבד, תמונה או PDF)</label>
+      <input type="file" id="adImage" name="adImage" accept="image/*,application/pdf" required>
+      <img id="previewImg" class="preview-img" style="display:none;" alt="תצוגה מקדימה">
+
+      <label for="adContent">תוכן המודעה (לטקסט בלבד, עד 200 תווים)</label>
+      <textarea id="adContent" name="adContent" maxlength="200" placeholder="רק לקטגוריות יד 2/השבת אבידה"></textarea>
+
+      <label for="adPhone">מספר טלפון</label>
+      <input type="tel" id="adPhone" name="adPhone" pattern="[0-9\-+ ]{9,15}" required>
+      <label><input type="checkbox" id="adWhatsapp" name="adWhatsapp"> יש וואטסאפ</label>
+
+      <label for="adLink">קישור (אופציונלי)</label>
+      <input type="url" id="adLink" name="adLink" placeholder="https://...">
+
+      <label for="adEmail">אימייל לקבלת פניות</label>
+      <input type="email" id="adEmail" name="adEmail" required>
+
+      <div class="dynamic-fields">
+        <label>שדות דינמיים (כמו מלאי, שעות פעילות):</label>
+        <input type="text" name="dynamicField[]" placeholder="שם השדה (למשל: מלאי)">
+        <input type="text" name="dynamicValue[]" placeholder="ערך (למשל: קיים)">
+        <button type="button" onclick="addDynamicField()">הוסף שדה</button>
+      </div>
+
+      <div class="ad-actions">
+        <button type="submit" class="ad-btn">פרסם מודעה</button>
+        <button type="button" class="ad-btn cancel" onclick="window.location.href='index.html'">ביטול</button>
+      </div>
+    </form>
+  </div>
+  <script src="cities-data.js"></script>
+  <script src="ad-form-cities.js"></script>
+  <script>
+    // תצוגה מקדימה של תמונה
+    document.getElementById('adImage').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById('previewImg');
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          preview.src = ev.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    // שמירה ל-localStorage והודעת הצלחה
+    document.getElementById('adForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const ad = {
+        title: form.adTitle.value,
+        category: form.adCategory.value,
+        city: form.adCity ? form.adCity.value : '',
+        neighborhood: form.adNeighborhood ? form.adNeighborhood.value : '',
+        size: form.adSize.value,
+        content: form.adContent.value,
+        phone: form.adPhone.value,
+        whatsapp: form.adWhatsapp.checked,
+        link: form.adLink.value,
+        email: form.adEmail.value,
+        dynamic: [],
+        date: new Date().toLocaleDateString('he-IL'),
+      };
+
+      // קובץ תמונה (נשמר כ-DataURL)
+      const imgFile = form.adImage.files[0];
+      if (imgFile && imgFile.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          ad.img = ev.target.result;
+          saveAd(ad);
+        };
+        reader.readAsDataURL(imgFile);
+      } else {
+        ad.img = '';
+        saveAd(ad);
+      }
+      function saveAd(ad) {
+        // שדות דינמיים
+        const fields = form.querySelectorAll('input[name="dynamicField[]"]');
+        const values = form.querySelectorAll('input[name="dynamicValue[]"]');
+        for (let i = 0; i < fields.length; i++) {
+          if(fields[i].value && values[i].value) {
+            ad.dynamic.push({field: fields[i].value, value: values[i].value});
+          }
+        }
+        // שמירה ל-localStorage
+        let ads = JSON.parse(localStorage.getItem('ads') || '[]');
+        ad.id = Date.now();
+        ads.push(ad);
+        localStorage.setItem('ads', JSON.stringify(ads));
+        // הודעת הצלחה
+        showSuccess();
+      }
+      function showSuccess() {
+        const msg = document.createElement('div');
+        msg.textContent = 'המודעה הועלתה בהצלחה!';
+        msg.style.background = '#25d366';
+        msg.style.color = '#fff';
+        msg.style.padding = '14px';
+        msg.style.borderRadius = '10px';
+        msg.style.textAlign = 'center';
+        msg.style.margin = '20px 0';
+        form.parentNode.insertBefore(msg, form);
+        form.style.display = 'none';
+        setTimeout(()=>{ window.location.href = 'index.html'; }, 1500);
+      }
+    });
+
+    // הוספת שדה דינמי
+    function addDynamicField() {
+      const container = document.querySelector('.dynamic-fields');
+      const field = document.createElement('input');
+      field.type = 'text';
+      field.name = 'dynamicField[]';
+      field.placeholder = 'שם השדה';
+      container.appendChild(field);
+      const value = document.createElement('input');
+      value.type = 'text';
+      value.name = 'dynamicValue[]';
+      value.placeholder = 'ערך';
+      container.appendChild(value);
+    }
+  </script>
+</body>
+</html>
