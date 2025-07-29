@@ -24,13 +24,11 @@ window.addEventListener('DOMContentLoaded', function() {
 
   function openFilterBar() {
     filterBar.style.display = 'block';
-    overlay.style.display = 'block';
     renderFilterBar();
   }
 
   function closeFilterBar() {
     filterBar.style.display = 'none';
-    overlay.style.display = 'none';
     // סגירת כל התפריטים הנגללים
     document.querySelectorAll('.city-dropdown').forEach(dropdown => {
       dropdown.classList.remove('open');
@@ -126,7 +124,7 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // קונטיינר לכפתורים
     const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'filter-buttons-container';
+    buttonsContainer.className = 'filter-actions';
     buttonsContainer.appendChild(applyBtn);
     buttonsContainer.appendChild(clearBtn);
     filterBar.appendChild(buttonsContainer);
@@ -178,6 +176,21 @@ window.addEventListener('DOMContentLoaded', function() {
             dropdown.classList.remove('open');
           });
           cityContainer.classList.add('open');
+          
+          // וידוא שתפריט השכונות מופיע במקום הנכון
+          setTimeout(() => {
+            const menu = cityContainer.querySelector('.neighborhoods-menu');
+            if (menu) {
+              const rect = cityContainer.getBoundingClientRect();
+              const viewportWidth = window.innerWidth;
+              
+              // אם התפריט חורג מהמסך, הזז אותו שמאלה
+              if (rect.right + 200 > viewportWidth) {
+                menu.style.right = 'auto';
+                menu.style.left = '0';
+              }
+            }
+          }, 10);
         }
       }
     };

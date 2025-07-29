@@ -18,6 +18,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  position: relative;
 }
     .logo { width: 220px; margin-bottom: 10px; }
     .subtitle { color: #333; font-size: 18px; margin-bottom: 0; }
@@ -82,8 +83,21 @@
       display: inline-block; background: #0099cc; color: #fff; font-weight: bold;
       padding: 8px 18px; border-radius: 8px; text-decoration: none; font-size: 16px;
       transition: background 0.2s, color 0.2s;
+      position: relative;
     }
     .nav-btn:hover { background: #ffd600; color: #222; }
+    
+    #openFilterBarBtn {
+      position: relative;
+    }
+    
+    /* וידוא שתפריט הסינון מופיע מתחת לכפתור */
+    #openFilterBarBtn + .filter-bar {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
     .badge {
       background-color: #ff5722;
       color: white;
@@ -140,6 +154,11 @@
     </nav>
   </div>
   <div class="subtitle">הלוח הדיגיטלי של הצפון</div>
+  
+  <!-- תפריט סינון מתקדם מתחת לכפתור -->
+  <div id="filterBar" class="filter-bar" style="display: none;"></div>
+  
+
   <style>
     .header-row {
       display: flex;
@@ -171,44 +190,126 @@
       .header-row { flex-direction: column; gap: 8px; padding: 0 4px; }
       .logo { width: 120px; margin-left: 0; }
       .main-nav { gap: 6px; flex-wrap: wrap; }
+      
+      .filter-bar {
+        margin: 5px;
+        padding: 10px;
+        width: 95%;
+        left: 2.5%;
+        transform: none;
+      }
+      
+      .filters-container {
+        gap: 6px;
+      }
+      
+      .filter-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+      
+      .neighborhoods-menu {
+        min-width: 180px;
+        max-height: 150px;
+        right: -10px;
+      }
+      
+      .neighborhood-label {
+        font-size: 12px;
+        padding: 5px 8px;
+      }
     }
 
     /* סגנונות לסרגל הסינון המתקדם */
     .filter-bar-overlay {
       display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 999;
     }
 
     .filter-bar {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      position: absolute;
+      top: 100%;
+      right: 20px;
       width: 90%;
       max-width: 600px;
-      max-height: 80vh;
+      margin: 0;
       background: #f8f9fa;
       border: 1px solid #e9ecef;
       border-radius: 12px;
-      padding: 20px;
+      padding: 15px;
       direction: rtl;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       z-index: 1000;
-      overflow-y: auto;
+      overflow: visible;
+    }
+
+    .close-filter-btn {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    }
+
+    .close-filter-btn:hover {
+      background: #d84315;
+    }
+
+    .filter-bar h3 {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      text-align: center;
+      color: #333;
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .apply-filter-btn, .clear-filter-btn {
+      background: #0099cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .apply-filter-btn:hover {
+      background: #007a99;
+    }
+
+    .clear-filter-btn {
+      background: #ff5722;
+    }
+
+    .clear-filter-btn:hover {
+      background: #d84315;
     }
 
     .filters-container {
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin-bottom: 15px;
       align-items: flex-start;
+      overflow-x: auto;
+      padding-bottom: 5px;
     }
 
     .filter-btn {
@@ -217,16 +318,38 @@
       align-items: center;
       gap: 8px;
       padding: 10px 16px;
+      background: #e9ecef;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover {
+      background: #dee2e6;
+    }
+
+    .filter-btn.selected {
+      background: #0099cc;
+      color: white;
+      border-color: #0099cc;
+    }
+
+    .filter-btn {
       background: #f8f9fa;
       border: 2px solid #e9ecef;
-      border-radius: 25px;
+      border-radius: 20px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: #495057;
       transition: all 0.2s ease;
       white-space: nowrap;
       user-select: none;
+      padding: 8px 12px;
+      min-width: fit-content;
     }
 
     .filter-btn input[type="checkbox"] {
@@ -234,17 +357,6 @@
       height: 16px;
       accent-color: #007bff;
       cursor: pointer;
-    }
-
-    .filter-btn:hover {
-      background: #e9ecef;
-      border-color: #dee2e6;
-    }
-
-    .filter-btn.selected {
-      background: #007bff;
-      border-color: #007bff;
-      color: white;
     }
 
     .filter-btn .dropdown-arrow {
@@ -261,14 +373,47 @@
     }
 
     .neighborhoods-menu {
-      width: 100%;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      min-width: 200px;
       background: #ffffff;
       border: 1px solid #dee2e6;
-      border-radius: 6px;
-      margin-top: 8px;
+      border-radius: 8px;
+      margin-top: 5px;
       padding: 8px;
       display: none;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 9999;
+      min-height: 0;
+      max-height: 80vh;
+      height: auto;
+      overflow-y: auto;
+      white-space: nowrap;
+      backdrop-filter: blur(10px);
+      border: 2px solid #0099cc;
+    }
+
+    .filter-bar {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 1200px;
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      padding: 15px;
+      direction: rtl;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      overflow: visible;
+      margin-top: 5px;
+    }
+
+    .city-dropdown {
+      position: relative;
     }
 
     .city-dropdown.open .neighborhoods-menu {
@@ -294,29 +439,47 @@
     .neighborhood-label {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
+      gap: 6px;
+      padding: 6px 10px;
       cursor: pointer;
-      transition: background 0.2s ease;
-      margin: 0;
-      font-size: 14px;
+      transition: all 0.2s ease;
+      margin: 2px 0;
+      font-size: 13px;
       color: #495057;
+      border-radius: 4px;
+      background: #f8f9fa;
+      border: 1px solid transparent;
+      font-weight: 500;
     }
 
     .neighborhood-label:hover {
-      background: #f8f9fa;
+      background: #e9ecef;
+      border-color: #dee2e6;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .neighborhood-label.selected {
-      background: #e3f2fd;
-      color: #1976d2;
+      background: #0099cc;
+      color: white;
+      border-color: #0099cc;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 153, 204, 0.3);
     }
+
+
 
     .neighborhood-label input[type="checkbox"] {
       margin: 0;
       width: 16px;
       height: 16px;
-      accent-color: #007bff;
+      accent-color: #0099cc;
+      cursor: pointer;
+    }
+
+    /* וידוא שתפריט השכונות מופיע מעל הכל */
+    .filter-bar * {
+      overflow: visible;
     }
 
     .apply-filter-btn {
@@ -440,10 +603,11 @@
   </style>
 </header>
 
+
+
   <div class="main-layout">
     <!-- סרגל סינון מתקדם -->
     <div id="filterBarOverlay" class="filter-bar-overlay"></div>
-    <div id="filterBar" class="filter-bar" style="display: none;"></div>
     
     <nav class="categories-menu">
       <ul id="categoriesMenuUl"></ul>
@@ -527,16 +691,9 @@
     // טען מודעות מה-localStorage, סנן לפי עיר נבחרת והצג אותן
     function renderAds(filteredAds) {
       let ads = Array.isArray(filteredAds) ? filteredAds : JSON.parse(localStorage.getItem('ads')||'[]');
-      
       // אם קיבלנו מודעות מסוננות, נשתמש בהן
-      // אחרת נסנן לפי עיר נבחרת (למען תאימות לאחור)
-      if (!Array.isArray(filteredAds)) {
-        const selectedCity = localStorage.getItem('selectedCity');
-        if (selectedCity) {
-          ads = ads.filter(ad => ad.city === selectedCity);
-        }
-      }
-      
+      // אחרת - מציגים את כל המודעות (ללא סינון ברירת מחדל)
+      // (הסרת סינון לפי selectedCity)
       const board = document.getElementById('adsBoard');
       const demo = document.getElementById('demoAd');
       // Remove old ads
@@ -701,21 +858,7 @@ function renderCategoriesMenu() {
     );
   })();
 
-  // Add 'All' category if there are multiple categories
-  if (categoriesSource.length > 1) {
-    const allLi = document.createElement('li');
-    const allLink = document.createElement('a');
-    allLink.href = '#';
-    allLink.className = 'category-link';
-    allLink.style.backgroundColor = '#0099cc';
-    allLink.style.color = 'white';
-    allLink.innerHTML = `
-      <span class="category-icon">🏠</span>
-      <span class="category-name">הכל</span>
-    `;
-    allLi.appendChild(allLink);
-    menu.appendChild(allLi);
-  }
+
 
   // Add each category to the menu
   categoriesSource.forEach(catName => {
@@ -749,11 +892,7 @@ function renderCategoriesMenu() {
       clickedLink.style.backgroundColor = '#0099cc';
       clickedLink.style.color = 'white';
       
-      // If 'All' was clicked, scroll to top
-      if (clickedLink.querySelector('.category-name').textContent === 'הכל') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
+
       
       // Otherwise, scroll to the selected category
       const categoryName = clickedLink.querySelector('.category-name').textContent;

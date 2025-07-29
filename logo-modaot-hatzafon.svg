@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="420" height="160" viewBox="0 0 420 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="160" rx="24" fill="#F7FAFC"/>
+  <g font-family="Heebo, Arial, sans-serif" font-weight="bold" text-anchor="middle">
+    <text x="210" y="70" font-size="48" fill="#0099CC" letter-spacing="1">
+      מודעות הצפון
+    </text>
+    <text x="210" y="110" font-size="22" fill="#333" font-weight="normal">
+      הלוח הדיגיטלי של הצפון
+    </text>
+  </g>
+  <!-- Icon: Pin/Compass -->
+  <g>
+    <circle cx="60" cy="50" r="22" fill="#FFD600" stroke="#0099CC" stroke-width="4"/>
+    <polygon points="60,36 66,54 60,48 54,54" fill="#0099CC"/>
+    <circle cx="60" cy="50" r="6" fill="#fff"/>
+  </g>
+</svg>
