@@ -12,13 +12,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff;
-  box-shadow: 0 2px 8px #e0e0e0;
-  padding: 24px 0 8px 0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 20px 0 12px 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  position: relative;
+  border-bottom: 1px solid rgba(0, 153, 204, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
     .logo { width: 220px; margin-bottom: 10px; }
     .subtitle { color: #333; font-size: 18px; margin-bottom: 0; }
@@ -80,12 +82,33 @@
       }
     }
     .nav-btn {
-      display: inline-block; background: #0099cc; color: #fff; font-weight: bold;
-      padding: 8px 18px; border-radius: 8px; text-decoration: none; font-size: 16px;
-      transition: background 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0099cc 0%, #007ab8 100%);
+      color: #fff;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(0, 153, 204, 0.2);
+      transform: translateY(0);
     }
-    .nav-btn:hover { background: #ffd600; color: #222; }
+    .nav-btn:hover {
+      background: linear-gradient(135deg, #ffd600 0%, #ffcc00 100%);
+      color: #1a1a1a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 214, 0, 0.3);
+      border-color: rgba(255, 214, 0, 0.5);
+    }
+    .nav-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 153, 204, 0.2);
+    }
     
     #openFilterBarBtn {
       position: relative;
@@ -99,12 +122,17 @@
       transform: translateX(-50%);
     }
     .badge {
-      background-color: #ff5722;
+      background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
       color: white;
-      border-radius: 10px;
-      padding: 2px 6px;
-      font-size: 12px;
-      margin-right: 5px;
+      border-radius: 12px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 6px;
+      min-width: 20px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(255, 87, 34, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .modal {
       display: none;
@@ -133,8 +161,20 @@
       font-size: 20px;
     }
     @media (max-width: 900px) {
-      .main-nav { flex-wrap: wrap; gap: 7px; }
-      .nav-btn { font-size: 15px; padding: 7px 10px; }
+      .main-nav { 
+        flex-wrap: wrap; 
+        gap: 12px; 
+        justify-content: center;
+      }
+      .nav-btn { 
+        font-size: 14px; 
+        padding: 10px 14px;
+        min-width: fit-content;
+      }
+      .header-row {
+        gap: 20px;
+        padding: 0 16px;
+      }
     }
   </style>
 </head>
@@ -165,31 +205,67 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
-      padding: 0 16px;
-      min-height: 64px;
+      gap: 32px;
+      padding: 0 24px;
+      min-height: 72px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .logo {
-      width: 160px;
+      width: 180px;
       margin-bottom: 0;
-      margin-left: 12px;
+      margin-left: 0;
+      transition: transform 0.3s ease;
+    }
+    .logo:hover {
+      transform: scale(1.05);
     }
     .main-nav {
       display: flex;
       flex-direction: row;
-      gap: 12px;
+      gap: 16px;
+      align-items: center;
     }
     .subtitle {
       text-align: center;
       font-size: 18px;
-      color: #333;
-      margin-bottom: 0;
-      margin-top: 2px;
+      color: #555;
+      margin-bottom: 8px;
+      margin-top: 8px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
     @media (max-width: 600px) {
-      .header-row { flex-direction: column; gap: 8px; padding: 0 4px; }
-      .logo { width: 120px; margin-left: 0; }
-      .main-nav { gap: 6px; flex-wrap: wrap; }
+      .header-row { 
+        flex-direction: column; 
+        gap: 16px; 
+        padding: 0 16px; 
+        min-height: auto;
+      }
+      .logo { 
+        width: 140px; 
+        margin-left: 0; 
+      }
+      .main-nav { 
+        gap: 12px; 
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+      }
+      .nav-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+        min-width: fit-content;
+      }
+      .subtitle {
+        font-size: 16px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+      header {
+        padding: 16px 0 8px 0;
+      }
       
       .filter-bar {
         margin: 5px;
@@ -1019,6 +1095,35 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-</script>
-</body>
-</html>
+
+// הוספת אפקט סקרול לתפריט העליון
+let lastScrollTop = 0;
+let isScrolling = false;
+
+function handleHeaderScroll() {
+  const header = document.querySelector('header');
+  const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+  
+  if (currentScroll > lastScrollTop && currentScroll > 100) {
+    // גלילה למטה - הקטן מעט את הhader
+    header.style.transform = 'translateY(-10px)';
+    header.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1)';
+  } else {
+    // גלילה למעלה או בראש העמוד - החזר למקום
+    header.style.transform = 'translateY(0)';
+    header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)';
+  }
+  
+  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+}
+
+// הוספת event listener לסקרול עם throttling
+let scrollTimeout;
+window.addEventListener('scroll', function() {
+  if (!scrollTimeout) {
+    scrollTimeout = setTimeout(function() {
+      handleHeaderScroll();
+      scrollTimeout = null;
+    }, 10);
+  }
+});
