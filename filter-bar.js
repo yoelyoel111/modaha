@@ -22,17 +22,35 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   };
 
+  // סגירה בלחיצה על הרקע
+  overlay.onclick = function() {
+    closeFilterBar();
+  };
+
   function openFilterBar() {
     filterBar.style.display = 'block';
+    overlay.classList.add('active');
     renderFilterBar();
+    
+    // הוספת אירוע לסגירת תפריטים כשלוחצים מחוץ לטווח
+    document.addEventListener('click', closeAllDropdowns);
+  }
+  
+  function closeAllDropdowns() {
+    document.querySelectorAll('.city-dropdown').forEach(dropdown => {
+      dropdown.classList.remove('open');
+    });
   }
 
   function closeFilterBar() {
     filterBar.style.display = 'none';
+    overlay.classList.remove('active');
     // סגירת כל התפריטים הנגללים
     document.querySelectorAll('.city-dropdown').forEach(dropdown => {
       dropdown.classList.remove('open');
     });
+    // הסרת אירוע הלחיצה
+    document.removeEventListener('click', closeAllDropdowns);
   }
 
   function getAdsCounts() {
@@ -148,7 +166,9 @@ window.addEventListener('DOMContentLoaded', function() {
     const cityContainer = document.createElement('div');
     cityContainer.className = 'city-dropdown';
     
-    const cityBtn = createFilterButton(`${city.name} (${cityAdsCount})`, 'city', isCitySelected);
+    // יצירת הכפתור הראשי
+    const cityBtn = document.createElement('div');
+    cityBtn.className = `filter-btn ${isCitySelected ? 'selected' : ''}`;
     
     // הוספת checkbox לעיר
     const cityCheckbox = document.createElement('input');
@@ -159,7 +179,25 @@ window.addEventListener('DOMContentLoaded', function() {
       e.stopPropagation();
       toggleCitySelection(city.name);
     };
-    cityBtn.insertBefore(cityCheckbox, cityBtn.firstChild);
+    
+    // תוכן הכפתור
+    const cityText = document.createElement('span');
+    cityText.textContent = `${city.name} (${cityAdsCount})`;
+    
+    // חץ dropdown אם יש שכונות
+    let dropdownArrow = null;
+    if (hasNeighborhoods) {
+      dropdownArrow = document.createElement('span');
+      dropdownArrow.className = 'dropdown-arrow';
+      dropdownArrow.textContent = '▼';
+    }
+    
+    // הרכבת הכפתור
+    cityBtn.appendChild(cityCheckbox);
+    cityBtn.appendChild(cityText);
+    if (dropdownArrow) {
+      cityBtn.appendChild(dropdownArrow);
+    }
     
     cityBtn.onclick = function(e) {
       e.stopPropagation();
@@ -176,21 +214,6 @@ window.addEventListener('DOMContentLoaded', function() {
             dropdown.classList.remove('open');
           });
           cityContainer.classList.add('open');
-          
-          // וידוא שתפריט השכונות מופיע במקום הנכון
-          setTimeout(() => {
-            const menu = cityContainer.querySelector('.neighborhoods-menu');
-            if (menu) {
-              const rect = cityContainer.getBoundingClientRect();
-              const viewportWidth = window.innerWidth;
-              
-              // אם התפריט חורג מהמסך, הזז אותו שמאלה
-              if (rect.right + 200 > viewportWidth) {
-                menu.style.right = 'auto';
-                menu.style.left = '0';
-              }
-            }
-          }, 10);
         }
       }
     };
@@ -199,35 +222,45 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // יצירת תפריט השכונות
     if (hasNeighborhoods) {
-      const neighborhoodsMenu = document.createElement('div');
-      neighborhoodsMenu.className = 'neighborhoods-menu';
+      const neighborhoodsDropdown = document.createElement('div');
+      neighborhoodsDropdown.className = 'neighborhoods-dropdown';
       
       const validNeighborhoods = city.neighborhoods.filter(n => n && n !== 'כללי');
       validNeighborhoods.forEach(neighborhood => {
-        const neighborhoodItem = document.createElement('div');
-        neighborhoodItem.className = 'neighborhood-item';
+        const neighborhoodOption = document.createElement('div');
+        neighborhoodOption.className = 'neighborhood-option';
         
         const isSelected = selectedFilters.neighborhoods[city.name] && 
                           selectedFilters.neighborhoods[city.name].includes(neighborhood);
         
+        if (isSelected) {
+          neighborhoodOption.classList.add('selected');
+        }
+        
         const neighborhoodCount = (adsCounts.neighborhoods[city.name] && adsCounts.neighborhoods[city.name][neighborhood]) || 0;
         
-        neighborhoodItem.innerHTML = `
-          <label class="neighborhood-label ${isSelected ? 'selected' : ''}">
-            <input type="checkbox" ${isSelected ? 'checked' : ''}>
-            <span>${neighborhood} (${neighborhoodCount})</span>
-          </label>
+        neighborhoodOption.innerHTML = `
+          <input type="checkbox" ${isSelected ? 'checked' : ''} style="margin-left: 8px;">
+          <span>${neighborhood} (${neighborhoodCount})</span>
         `;
         
-        const checkbox = neighborhoodItem.querySelector('input');
-        checkbox.onchange = function() {
+        const checkbox = neighborhoodOption.querySelector('input');
+        checkbox.onchange = function(e) {
+          e.stopPropagation();
           toggleNeighborhoodSelection(city.name, neighborhood);
         };
         
-        neighborhoodsMenu.appendChild(neighborhoodItem);
+        neighborhoodOption.onclick = function(e) {
+          if (!e.target.matches('input[type="checkbox"]')) {
+            checkbox.checked = !checkbox.checked;
+            toggleNeighborhoodSelection(city.name, neighborhood);
+          }
+        };
+        
+        neighborhoodsDropdown.appendChild(neighborhoodOption);
       });
       
-      cityContainer.appendChild(neighborhoodsMenu);
+      cityContainer.appendChild(neighborhoodsDropdown);
     }
     
     return cityContainer;
