@@ -1,83 +1,157 @@
-// סרגל סינון מתקדם לערים ושכונות - עיצוב מודרני
-window.addEventListener('DOMContentLoaded', function() {
-  const openBtn = document.getElementById('openFilterBarBtn');
-  const filterBar = document.getElementById('filterBar');
-  const overlay = document.getElementById('filterBarOverlay');
-  
-  if (!openBtn || !filterBar || !overlay || !window.citiesData) return;
-
-  // משתנים גלובליים לבחירות
-  let selectedFilters = {
-    cities: [], // רשימת ערים נבחרות
-    neighborhoods: {} // אובייקט של עיר -> רשימת שכונות
-  };
-
-  // פתיחת/סגירת הסרגל
-  openBtn.onclick = function(e) {
-    e.preventDefault();
-    if (filterBar.style.display === 'block') {
-      closeFilterBar();
-    } else {
-      openFilterBar();
-    }
-  };
-
-  function openFilterBar() {
-    filterBar.style.display = 'block';
-    renderFilterBar();
-  }
-
-  function closeFilterBar() {
-    filterBar.style.display = 'none';
-    // סגירת כל התפריטים הנגללים
-    document.querySelectorAll('.city-dropdown').forEach(dropdown => {
-      dropdown.classList.remove('open');
-    });
-  }
-
-  function getAdsCounts() {
-    const ads = JSON.parse(localStorage.getItem('ads') || '[]');
-    const counts = {
-      cities: {},
+// סרגל סינון מתקדם לערים ושכונות - עיצוב מודרני ומאופטם
+class FilterBarManager {
+  constructor() {
+    this.selectedFilters = {
+      cities: [],
       neighborhoods: {}
     };
+    this.cachedAdsCounts = null;
+    this.cacheTimeout = null;
+    this.elements = {};
+    this.debounceTimer = null;
     
-    ads.forEach(ad => {
-      const city = ad.city || 'כללי';
-      const neighborhood = ad.neighborhood || 'כללי';
-      
-      // ספירת מודעות לפי עיר
-      counts.cities[city] = (counts.cities[city] || 0) + 1;
-      
-      // ספירת מודעות לפי שכונה
-      if (!counts.neighborhoods[city]) {
-        counts.neighborhoods[city] = {};
-      }
-      counts.neighborhoods[city][neighborhood] = (counts.neighborhoods[city][neighborhood] || 0) + 1;
-    });
-    
-    return counts;
+    this.init();
   }
 
-  function renderFilterBar() {
-    filterBar.innerHTML = '';
+  init() {
+    // cache DOM elements
+    this.elements = {
+      openBtn: document.getElementById('openFilterBarBtn'),
+      filterBar: document.getElementById('filterBar'),
+      overlay: document.getElementById('filterBarOverlay'),
+      badge: document.getElementById('selectedCityBadge')
+    };
+
+    if (!this.elements.openBtn || !this.elements.filterBar || !this.elements.overlay || !window.citiesData) {
+      console.warn('Required elements or data not found for FilterBarManager');
+      return;
+    }
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    // פתיחת/סגירת הסרגל
+    this.elements.openBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.toggleFilterBar();
+    });
+
+    // סגירת הסרגל בלחיצה על ה-overlay
+    this.elements.overlay.addEventListener('click', () => {
+      this.closeFilterBar();
+    });
+
+    // סגירת תפריטים בלחיצה מחוץ לאזור
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.city-dropdown')) {
+        this.closeAllDropdowns();
+      }
+    });
+
+    // מאזין לשינויים ב-localStorage
+    window.addEventListener('storage', () => {
+      this.invalidateCache();
+    });
+  }
+
+  toggleFilterBar() {
+    if (this.elements.filterBar.style.display === 'block') {
+      this.closeFilterBar();
+    } else {
+      this.openFilterBar();
+    }
+  }
+
+  openFilterBar() {
+    this.elements.filterBar.style.display = 'block';
+    this.elements.filterBar.setAttribute('aria-hidden', 'false');
+    this.renderFilterBar();
+    
+    // focus management for accessibility
+    setTimeout(() => {
+      const firstInput = this.elements.filterBar.querySelector('input, button');
+      if (firstInput) firstInput.focus();
+    }, 100);
+  }
+
+  closeFilterBar() {
+    this.elements.filterBar.style.display = 'none';
+    this.elements.filterBar.setAttribute('aria-hidden', 'true');
+    this.closeAllDropdowns();
+    this.elements.openBtn.focus(); // return focus
+  }
+
+  closeAllDropdowns() {
+    const dropdowns = document.querySelectorAll('.city-dropdown.open');
+    dropdowns.forEach(dropdown => dropdown.classList.remove('open'));
+  }
+
+  invalidateCache() {
+    this.cachedAdsCounts = null;
+    if (this.cacheTimeout) {
+      clearTimeout(this.cacheTimeout);
+    }
+  }
+
+  getAdsCounts() {
+    if (this.cachedAdsCounts) {
+      return this.cachedAdsCounts;
+    }
+
+    try {
+      const ads = JSON.parse(localStorage.getItem('ads') || '[]');
+      const counts = {
+        cities: {},
+        neighborhoods: {}
+      };
+      
+      ads.forEach(ad => {
+        const city = ad.city || 'כללי';
+        const neighborhood = ad.neighborhood || 'כללי';
+        
+        // ספירת מודעות לפי עיר
+        counts.cities[city] = (counts.cities[city] || 0) + 1;
+        
+        // ספירת מודעות לפי שכונה
+        if (!counts.neighborhoods[city]) {
+          counts.neighborhoods[city] = {};
+        }
+        counts.neighborhoods[city][neighborhood] = (counts.neighborhoods[city][neighborhood] || 0) + 1;
+      });
+      
+      // cache for 30 seconds
+      this.cachedAdsCounts = counts;
+      this.cacheTimeout = setTimeout(() => {
+        this.cachedAdsCounts = null;
+      }, 30000);
+      
+      return counts;
+    } catch (error) {
+      console.error('Error parsing ads data:', error);
+      return { cities: {}, neighborhoods: {} };
+    }
+  }
+
+  renderFilterBar() {
+    this.elements.filterBar.innerHTML = '';
     
     // כפתור סגירה
     const closeBtn = document.createElement('button');
     closeBtn.className = 'close-filter-btn';
     closeBtn.innerHTML = '&times;';
-    closeBtn.onclick = closeFilterBar;
-    filterBar.appendChild(closeBtn);
+    closeBtn.onclick = this.closeFilterBar.bind(this);
+    this.elements.filterBar.appendChild(closeBtn);
     
     // כותרת
     const title = document.createElement('h3');
     title.textContent = 'סינון מתקדם לפי ערים ושכונות';
     title.style.marginBottom = '20px';
     title.style.textAlign = 'center';
-    filterBar.appendChild(title);
+    this.elements.filterBar.appendChild(title);
     
     // קבלת מונה המודעות
-    const adsCounts = getAdsCounts();
+    const adsCounts = this.getAdsCounts();
     
     // יצירת הקונטיינר הראשי
     const filtersContainer = document.createElement('div');
@@ -85,52 +159,50 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // כפתור "כל הסינונים" לאיפוס
     const totalAds = Object.values(adsCounts.cities).reduce((sum, count) => sum + count, 0);
-    const allFiltersBtn = createFilterButton(`כל הסינונים (${totalAds})`, 'all', selectedFilters.cities.length === 0);
+    const allFiltersBtn = this.createFilterButton(`כל הסינונים (${totalAds})`, 'all', this.selectedFilters.cities.length === 0);
     allFiltersBtn.onclick = function() {
-      selectedFilters.cities = [];
-      selectedFilters.neighborhoods = {};
-      renderFilterBar();
-      applyFilters();
-    };
+      this.selectedFilters.cities = [];
+      this.selectedFilters.neighborhoods = {};
+      this.renderFilterBar();
+      this.applyFilters();
+    }.bind(this);
     filtersContainer.appendChild(allFiltersBtn);
     
     // יצירת כפתורי ערים
     const validCities = window.citiesData.filter(city => city.name && city.name !== 'כללי');
     validCities.forEach(city => {
-      const cityBtn = createCityFilterButton(city, adsCounts);
+      const cityBtn = this.createCityFilterButton(city, adsCounts);
       filtersContainer.appendChild(cityBtn);
     });
     
-    filterBar.appendChild(filtersContainer);
+    this.elements.filterBar.appendChild(filtersContainer);
     
     // כפתור החלה
     const applyBtn = document.createElement('button');
     applyBtn.className = 'apply-filter-btn';
     applyBtn.textContent = 'הצג';
-    applyBtn.onclick = function() {
-      applyFilters();
-    };
+    applyBtn.onclick = this.applyFilters.bind(this);
     
     // כפתור נקה הכל
     const clearBtn = document.createElement('button');
     clearBtn.className = 'clear-filter-btn';
     clearBtn.textContent = 'נקה הכל';
     clearBtn.onclick = function() {
-      selectedFilters.cities = [];
-      selectedFilters.neighborhoods = {};
-      renderFilterBar();
-      applyFilters();
-    };
+      this.selectedFilters.cities = [];
+      this.selectedFilters.neighborhoods = {};
+      this.renderFilterBar();
+      this.applyFilters();
+    }.bind(this);
     
     // קונטיינר לכפתורים
     const buttonsContainer = document.createElement('div');
     buttonsContainer.className = 'filter-actions';
     buttonsContainer.appendChild(applyBtn);
     buttonsContainer.appendChild(clearBtn);
-    filterBar.appendChild(buttonsContainer);
+    this.elements.filterBar.appendChild(buttonsContainer);
   }
 
-  function createFilterButton(text, type, isSelected) {
+  createFilterButton(text, type, isSelected) {
     const btn = document.createElement('div');
     btn.className = `filter-btn ${isSelected ? 'selected' : ''}`;
     btn.innerHTML = `
@@ -140,15 +212,15 @@ window.addEventListener('DOMContentLoaded', function() {
     return btn;
   }
 
-  function createCityFilterButton(city, adsCounts) {
-    const isCitySelected = selectedFilters.cities.includes(city.name);
+  createCityFilterButton(city, adsCounts) {
+    const isCitySelected = this.selectedFilters.cities.includes(city.name);
     const hasNeighborhoods = city.neighborhoods && city.neighborhoods.length > 0;
     const cityAdsCount = adsCounts.cities[city.name] || 0;
     
     const cityContainer = document.createElement('div');
     cityContainer.className = 'city-dropdown';
     
-    const cityBtn = createFilterButton(`${city.name} (${cityAdsCount})`, 'city', isCitySelected);
+    const cityBtn = this.createFilterButton(`${city.name} (${cityAdsCount})`, 'city', isCitySelected);
     
     // הוספת checkbox לעיר
     const cityCheckbox = document.createElement('input');
@@ -157,8 +229,8 @@ window.addEventListener('DOMContentLoaded', function() {
     cityCheckbox.style.marginLeft = '8px';
     cityCheckbox.onchange = function(e) {
       e.stopPropagation();
-      toggleCitySelection(city.name);
-    };
+      this.toggleCitySelection(city.name);
+    }.bind(this);
     cityBtn.insertBefore(cityCheckbox, cityBtn.firstChild);
     
     cityBtn.onclick = function(e) {
@@ -207,8 +279,8 @@ window.addEventListener('DOMContentLoaded', function() {
         const neighborhoodItem = document.createElement('div');
         neighborhoodItem.className = 'neighborhood-item';
         
-        const isSelected = selectedFilters.neighborhoods[city.name] && 
-                          selectedFilters.neighborhoods[city.name].includes(neighborhood);
+        const isSelected = this.selectedFilters.neighborhoods[city.name] && 
+                          this.selectedFilters.neighborhoods[city.name].includes(neighborhood);
         
         const neighborhoodCount = (adsCounts.neighborhoods[city.name] && adsCounts.neighborhoods[city.name][neighborhood]) || 0;
         
@@ -221,8 +293,8 @@ window.addEventListener('DOMContentLoaded', function() {
         
         const checkbox = neighborhoodItem.querySelector('input');
         checkbox.onchange = function() {
-          toggleNeighborhoodSelection(city.name, neighborhood);
-        };
+          this.toggleNeighborhoodSelection(city.name, neighborhood);
+        }.bind(this);
         
         neighborhoodsMenu.appendChild(neighborhoodItem);
       });
@@ -233,73 +305,73 @@ window.addEventListener('DOMContentLoaded', function() {
     return cityContainer;
   }
 
-  function toggleCitySelection(cityName) {
-    const index = selectedFilters.cities.indexOf(cityName);
+  toggleCitySelection(cityName) {
+    const index = this.selectedFilters.cities.indexOf(cityName);
     if (index > -1) {
       // הסרת העיר מהבחירה
-      selectedFilters.cities.splice(index, 1);
-      delete selectedFilters.neighborhoods[cityName];
+      this.selectedFilters.cities.splice(index, 1);
+      delete this.selectedFilters.neighborhoods[cityName];
     } else {
       // הוספת העיר לבחירה
-      selectedFilters.cities.push(cityName);
+      this.selectedFilters.cities.push(cityName);
     }
-    renderFilterBar();
+    this.renderFilterBar();
   }
 
-  function toggleNeighborhoodSelection(cityName, neighborhood) {
-    if (!selectedFilters.neighborhoods[cityName]) {
-      selectedFilters.neighborhoods[cityName] = [];
+  toggleNeighborhoodSelection(cityName, neighborhood) {
+    if (!this.selectedFilters.neighborhoods[cityName]) {
+      this.selectedFilters.neighborhoods[cityName] = [];
     }
     
-    const neighborhoods = selectedFilters.neighborhoods[cityName];
+    const neighborhoods = this.selectedFilters.neighborhoods[cityName];
     const index = neighborhoods.indexOf(neighborhood);
     
     if (index > -1) {
       neighborhoods.splice(index, 1);
       if (neighborhoods.length === 0) {
-        delete selectedFilters.neighborhoods[cityName];
-        const cityIndex = selectedFilters.cities.indexOf(cityName);
+        delete this.selectedFilters.neighborhoods[cityName];
+        const cityIndex = this.selectedFilters.cities.indexOf(cityName);
         if (cityIndex > -1) {
-          selectedFilters.cities.splice(cityIndex, 1);
+          this.selectedFilters.cities.splice(cityIndex, 1);
         }
       }
     } else {
       neighborhoods.push(neighborhood);
-      if (!selectedFilters.cities.includes(cityName)) {
-        selectedFilters.cities.push(cityName);
+      if (!this.selectedFilters.cities.includes(cityName)) {
+        this.selectedFilters.cities.push(cityName);
       }
     }
     
-    renderFilterBar();
+    this.renderFilterBar();
   }
 
-  function applyFilters() {
+  applyFilters() {
     // שמירת הבחירות במשתנים גלובליים
-    window.selectedCityFilters = selectedFilters.cities;
-    window.selectedNeighborhoodFilters = selectedFilters.neighborhoods;
+    window.selectedCityFilters = this.selectedFilters.cities;
+    window.selectedNeighborhoodFilters = this.selectedFilters.neighborhoods;
     
     // עדכון התג
-    updateFilterBadge();
+    this.updateFilterBadge();
     
     // קריאה לפונקציית הסינון
-    filterAndRenderAds();
+    this.filterAndRenderAds();
   }
 
-  function filterAndRenderAds() {
+  filterAndRenderAds() {
     const ads = JSON.parse(localStorage.getItem('ads') || '[]');
     let filteredAds = ads;
     
     // סינון לפי ערים ושכונות
-    if (selectedFilters.cities.length > 0) {
+    if (this.selectedFilters.cities.length > 0) {
       filteredAds = filteredAds.filter(ad => {
         const adCity = ad.city || 'כללי';
         
         // בדיקה אם העיר נבחרה
-        if (selectedFilters.cities.includes(adCity)) {
+        if (this.selectedFilters.cities.includes(adCity)) {
           // אם יש שכונות נבחרות לעיר הזו
-          if (selectedFilters.neighborhoods[adCity] && selectedFilters.neighborhoods[adCity].length > 0) {
+          if (this.selectedFilters.neighborhoods[adCity] && this.selectedFilters.neighborhoods[adCity].length > 0) {
             const adNeighborhood = ad.neighborhood || 'כללי';
-            return selectedFilters.neighborhoods[adCity].includes(adNeighborhood);
+            return this.selectedFilters.neighborhoods[adCity].includes(adNeighborhood);
           }
           // אם אין שכונות נבחרות, מציגים את כל המודעות מהעיר
           return true;
@@ -315,33 +387,24 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     
     // סגירת הסרגל אחרי החלת הסינון
-    closeFilterBar();
+    this.closeFilterBar();
   }
 
   // עדכון תג הסינון
-  function updateFilterBadge() {
-    const badge = document.getElementById('selectedCityBadge');
+  updateFilterBadge() {
+    const badge = this.elements.badge;
     if (badge) {
-      if (selectedFilters.cities.length > 0) {
-        badge.textContent = `${selectedFilters.cities.length} ערים`;
+      if (this.selectedFilters.cities.length > 0) {
+        badge.textContent = `${this.selectedFilters.cities.length} ערים`;
         badge.style.display = 'inline';
       } else {
         badge.style.display = 'none';
       }
     }
   }
+}
 
-  // סגירת תפריטים בלחיצה מחוץ לאזור
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.city-dropdown')) {
-      document.querySelectorAll('.city-dropdown').forEach(dropdown => {
-        dropdown.classList.remove('open');
-      });
-    }
-  });
-
-  // סגירת הסרגל בלחיצה על ה-overlay
-  overlay.addEventListener('click', function() {
-    closeFilterBar();
-  });
+// סרגל סינון מתקדם לערים ושכונות - עיצוב מודרני
+window.addEventListener('DOMContentLoaded', function() {
+  const filterBarManager = new FilterBarManager();
 });
