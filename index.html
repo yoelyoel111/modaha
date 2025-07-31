@@ -12,13 +12,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff;
-  box-shadow: 0 2px 8px #e0e0e0;
-  padding: 24px 0 8px 0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafb 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 20px 0 12px 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  position: relative;
+  border-bottom: 1px solid rgba(0, 153, 204, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
     .logo { width: 220px; margin-bottom: 10px; }
     .subtitle { color: #333; font-size: 18px; margin-bottom: 0; }
@@ -80,12 +82,33 @@
       }
     }
     .nav-btn {
-      display: inline-block; background: #0099cc; color: #fff; font-weight: bold;
-      padding: 8px 18px; border-radius: 8px; text-decoration: none; font-size: 16px;
-      transition: background 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0099cc 0%, #007ab8 100%);
+      color: #fff;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(0, 153, 204, 0.2);
+      transform: translateY(0);
     }
-    .nav-btn:hover { background: #ffd600; color: #222; }
+    .nav-btn:hover {
+      background: linear-gradient(135deg, #ffd600 0%, #ffcc00 100%);
+      color: #1a1a1a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 214, 0, 0.3);
+      border-color: rgba(255, 214, 0, 0.5);
+    }
+    .nav-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 153, 204, 0.2);
+    }
     
     #openFilterBarBtn {
       position: relative;
@@ -99,12 +122,17 @@
       transform: translateX(-50%);
     }
     .badge {
-      background-color: #ff5722;
+      background: linear-gradient(135deg, #ff5722 0%, #e64a19 100%);
       color: white;
-      border-radius: 10px;
-      padding: 2px 6px;
-      font-size: 12px;
-      margin-right: 5px;
+      border-radius: 12px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 6px;
+      min-width: 20px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(255, 87, 34, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     .modal {
       display: none;
@@ -133,30 +161,52 @@
       font-size: 20px;
     }
     @media (max-width: 900px) {
-      .main-nav { flex-wrap: wrap; gap: 7px; }
-      .nav-btn { font-size: 15px; padding: 7px 10px; }
+      .main-nav { 
+        flex-wrap: wrap; 
+        gap: 12px; 
+        justify-content: center;
+      }
+      .nav-btn { 
+        font-size: 14px; 
+        padding: 10px 14px;
+        min-width: fit-content;
+      }
+      .header-row {
+        gap: 20px;
+        padding: 0 16px;
+      }
     }
   </style>
 </head>
 <body>
   <!-- Scripts will be loaded at the bottom of the body -->
-  <header>
+  <header role="banner">
   <div class="header-row">
-    <img class="logo" src="logo-modaot-hatzafon.svg" alt="מודעות הצפון לוגו">
-    <nav class="main-nav">
-      <button id="openFilterBarBtn" class="nav-btn" title="סינון מתקדם">
-        <span class="filter-icon">🔍</span> סינון מתקדם
-        <span id="selectedCityBadge" class="badge" style="display: none;"></span>
+    <img class="logo" src="logo-modaot-hatzafon.svg" alt="מודעות הצפון לוגו" role="img">
+    <nav class="main-nav" role="navigation" aria-label="תפריט ניווט ראשי">
+      <button id="openFilterBarBtn" class="nav-btn" title="סינון מתקדם" 
+              aria-label="פתח סינון מתקדם לפי ערים ושכונות"
+              aria-expanded="false" aria-haspopup="dialog">
+        <span class="filter-icon" aria-hidden="true">🔍</span> סינון מתקדם
+        <span id="selectedCityBadge" class="badge" style="display: none;" aria-live="polite"></span>
       </button>
-      <a class="nav-btn" href="advertiser.html">➕ העלאת מודעה</a>
-      <a class="nav-btn" href="my-ads.html">📋 המודעות שלי</a>
-      <a class="nav-btn" href="admin-categories.html">⚙️ ניהול קטגוריות</a>
+      <a class="nav-btn" href="advertiser.html" aria-label="העלה מודעה חדשה">
+        <span aria-hidden="true">➕</span> העלאת מודעה
+      </a>
+      <a class="nav-btn" href="my-ads.html" aria-label="צפה במודעות שלי">
+        <span aria-hidden="true">📋</span> המודעות שלי
+      </a>
+      <a class="nav-btn" href="admin-categories.html" aria-label="נהל קטגוריות">
+        <span aria-hidden="true">⚙️</span> ניהול קטגוריות
+      </a>
     </nav>
   </div>
-  <div class="subtitle">הלוח הדיגיטלי של הצפון</div>
+  <div class="subtitle" role="doc-subtitle">הלוח הדיגיטלי של הצפון</div>
   
   <!-- תפריט סינון מתקדם מתחת לכפתור -->
-  <div id="filterBar" class="filter-bar" style="display: none;"></div>
+  <div id="filterBar" class="filter-bar" style="display: none;" 
+       role="dialog" aria-modal="true" aria-labelledby="filter-dialog-title" 
+       aria-hidden="true"></div>
   
 
   <style>
@@ -165,31 +215,67 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
-      padding: 0 16px;
-      min-height: 64px;
+      gap: 32px;
+      padding: 0 24px;
+      min-height: 72px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .logo {
-      width: 160px;
+      width: 180px;
       margin-bottom: 0;
-      margin-left: 12px;
+      margin-left: 0;
+      transition: transform 0.3s ease;
+    }
+    .logo:hover {
+      transform: scale(1.05);
     }
     .main-nav {
       display: flex;
       flex-direction: row;
-      gap: 12px;
+      gap: 16px;
+      align-items: center;
     }
     .subtitle {
       text-align: center;
       font-size: 18px;
-      color: #333;
-      margin-bottom: 0;
-      margin-top: 2px;
+      color: #555;
+      margin-bottom: 8px;
+      margin-top: 8px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
     @media (max-width: 600px) {
-      .header-row { flex-direction: column; gap: 8px; padding: 0 4px; }
-      .logo { width: 120px; margin-left: 0; }
-      .main-nav { gap: 6px; flex-wrap: wrap; }
+      .header-row { 
+        flex-direction: column; 
+        gap: 16px; 
+        padding: 0 16px; 
+        min-height: auto;
+      }
+      .logo { 
+        width: 140px; 
+        margin-left: 0; 
+      }
+      .main-nav { 
+        gap: 12px; 
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+      }
+      .nav-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+        min-width: fit-content;
+      }
+      .subtitle {
+        font-size: 16px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
+      header {
+        padding: 16px 0 8px 0;
+      }
       
       .filter-bar {
         margin: 5px;
@@ -607,15 +693,15 @@
 
   <div class="main-layout">
     <!-- סרגל סינון מתקדם -->
-    <div id="filterBarOverlay" class="filter-bar-overlay"></div>
+    <div id="filterBarOverlay" class="filter-bar-overlay" aria-hidden="true"></div>
     
-    <nav class="categories-menu">
-      <ul id="categoriesMenuUl"></ul>
+    <nav class="categories-menu" role="navigation" aria-label="תפריט קטגוריות">
+      <ul id="categoriesMenuUl" role="menubar" aria-label="רשימת קטגוריות"></ul>
     </nav>
-    <main class="ads-board" id="adsBoard">
-      <div class="ads-header">
-        <span class="dates">כ"ד בתמוז תשפ"ה | 20.07.2025</span>
-        <span class="parasha">פרשת מטות-מסעי</span>
+    <main class="ads-board" id="adsBoard" role="main" aria-label="לוח מודעות">
+      <div class="ads-header" role="banner" aria-label="כותרת לוח המודעות">
+        <span class="dates" aria-label="תאריך עברי ולועזי">כ"ד בתמוז תשפ"ה | 20.07.2025</span>
+        <span class="parasha" aria-label="פרשת השבוע">פרשת מטות-מסעי</span>
       </div>
 
       <!-- אפשר להוסיף כאן מודעות נוספות -->
@@ -632,7 +718,7 @@
   
   <script>
     // פונקציה לעדכון תפריט הקטגוריות בהתאם למודעות המסוננות
-    function updateCategoriesMenu(adsByCat, categoriesSource) {
+    const updateCategoriesMenu = (adsByCat, categoriesSource) => {
       const menuUl = document.getElementById('categoriesMenuUl');
       if (!menuUl) return;
       
@@ -642,157 +728,217 @@
       if (Object.keys(adsByCat).length > 1) {
         const allLi = document.createElement('li');
         allLi.innerHTML = `<a href="#" style="background-color: #0099cc; color: white;">🏠 הכל</a>`;
-        allLi.style.padding = '10px 8px';
-        allLi.style.marginBottom = '6px';
-        allLi.style.borderRadius = '8px';
-        allLi.style.cursor = 'pointer';
-        allLi.style.display = 'flex';
-        allLi.style.alignItems = 'center';
-        allLi.style.transition = 'background 0.2s, color 0.2s';
+        Object.assign(allLi.style, {
+          padding: '10px 8px',
+          marginBottom: '6px',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          transition: 'background 0.2s, color 0.2s'
+        });
         menuUl.appendChild(allLi);
       }
       
       // הוספת קטגוריות עם מודעות
       categoriesSource.forEach(cat => {
         const catName = typeof cat === 'object' ? cat.name : cat;
-        if (adsByCat[catName] && adsByCat[catName].length > 0) {
+        if (adsByCat[catName]?.length > 0) {
           const catData = window.categoriesData?.find(c => c.name === catName) || {};
           const li = document.createElement('li');
           li.innerHTML = `<a href="#cat-${catName.replace(/\s+/g, '-')}">${catData.icon || '📌'} ${catName}</a>`;
-          li.style.padding = '10px 8px';
-          li.style.marginBottom = '6px';
-          li.style.borderRadius = '8px';
-          li.style.cursor = 'pointer';
-          li.style.display = 'flex';
-          li.style.alignItems = 'center';
-          li.style.transition = 'background 0.2s, color 0.2s';
-          li.dataset.cat = catName;
-          li.dataset.bg = (catData.color || '#f0f0f0') + '22';
-          li.dataset.color = catData.color || '#333';
+          Object.assign(li.style, {
+            padding: '10px 8px',
+            marginBottom: '6px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            transition: 'background 0.2s, color 0.2s'
+          });
+          Object.assign(li.dataset, {
+            cat: catName,
+            bg: (catData.color || '#f0f0f0') + '22',
+            color: catData.color || '#333'
+          });
           menuUl.appendChild(li);
         }
       });
       
       // הוספת קטגוריית "ללא קטגוריה" אם יש מודעות כאלה
-      if (adsByCat['ללא קטגוריה'] && adsByCat['ללא קטגוריה'].length) {
+      if (adsByCat['ללא קטגוריה']?.length) {
         const li = document.createElement('li');
         li.innerHTML = `<a href="#cat-ללא-קטגוריה">📌 ללא קטגוריה</a>`;
-        li.style.padding = '10px 8px';
-        li.style.marginBottom = '6px';
-        li.style.borderRadius = '8px';
-        li.style.cursor = 'pointer';
-        li.style.display = 'flex';
-        li.style.alignItems = 'center';
-        li.style.transition = 'background 0.2s, color 0.2s';
+        Object.assign(li.style, {
+          padding: '10px 8px',
+          marginBottom: '6px',
+          borderRadius: '8px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          transition: 'background 0.2s, color 0.2s'
+        });
         menuUl.appendChild(li);
       }
-    }
+    };
 
     // טען מודעות מה-localStorage, סנן לפי עיר נבחרת והצג אותן
-    function renderAds(filteredAds) {
-      let ads = Array.isArray(filteredAds) ? filteredAds : JSON.parse(localStorage.getItem('ads')||'[]');
-      // אם קיבלנו מודעות מסוננות, נשתמש בהן
-      // אחרת - מציגים את כל המודעות (ללא סינון ברירת מחדל)
-      // (הסרת סינון לפי selectedCity)
-      const board = document.getElementById('adsBoard');
-      const demo = document.getElementById('demoAd');
-      // Remove old ads
-      board.querySelectorAll('.ad-card:not(.demo-ad), .ads-category-title').forEach(e => e.remove());
-      if (ads.length > 0 && demo) demo.style.display = 'none';
-      else if (demo) demo.style.display = '';
-      
-      // Get categories in the right order
-      const categoriesSource = (function() {
-        const savedOrder = localStorage.getItem('categoriesOrder');
-        if (savedOrder) {
-          try { 
-            return JSON.parse(savedOrder); 
-          } catch(e) {
-            console.error('Error parsing categories order:', e);
-            return window.categoriesData || [];
-          }
+    const renderAds = async (filteredAds) => {
+      try {
+        let ads = Array.isArray(filteredAds) ? 
+          filteredAds : 
+          SafeStorage.get('ads', []);
+        
+        // בדיקת תקינות נתונים
+        if (!Array.isArray(ads)) {
+          console.warn('Invalid ads data format, using empty array');
+          ads = [];
         }
-        return window.categoriesData || [];
-      })();
-      
-      if (!categoriesSource || !categoriesSource.length) return;
-  // קיבוץ מודעות לפי קטגוריה
-  const adsByCat = {};
-  ads.forEach(ad => {
-    const cat = ad.category || 'ללא קטגוריה';
-    if (!adsByCat[cat]) adsByCat[cat] = [];
-    adsByCat[cat].push(ad);
-  });
+        
+        // ניקוי נתונים לא תקינים
+        ads = ads.filter(ad => DataValidator.validateAd(ad));
+        
+        const board = document.getElementById('adsBoard');
+        const demo = document.getElementById('demoAd');
+        
+        if (!board) {
+          throw new Error('Ads board element not found');
+        }
+        
+        // Remove old ads with better performance
+        const elementsToRemove = board.querySelectorAll('.ad-card:not(.demo-ad), .ads-category-title');
+        const fragment = document.createDocumentFragment();
+        
+        // Move elements to fragment for batch removal
+        elementsToRemove.forEach(el => fragment.appendChild(el));
+        
+        // Show/hide demo based on ads availability
+        if (demo) {
+          demo.style.display = ads.length > 0 ? 'none' : '';
+        }
+        
+        // Get categories with improved error handling
+        const categoriesSource = (() => {
+          try {
+            const savedOrder = SafeStorage.get('categoriesOrder');
+            if (Array.isArray(savedOrder)) return savedOrder;
+          } catch(e) {
+            console.warn('Error parsing categories order:', e);
+          }
+          return window.categoriesData || [];
+        })();
+        
+        if (!categoriesSource?.length) {
+          console.warn('No categories data available');
+          return;
+        }
 
-  // עדכון תפריט הקטגוריות (ul#categoriesMenuUl) בהתאם למודעות המסוננות
-  updateCategoriesMenu(adsByCat, categoriesSource);
+        // קיבוץ מודעות לפי קטגוריה עם Map
+        const adsByCat = new Map();
+        ads.forEach(ad => {
+          const cat = ad.category || 'ללא קטגוריה';
+          if (!adsByCat.has(cat)) {
+            adsByCat.set(cat, []);
+          }
+          adsByCat.get(cat).push(ad);
+        });
 
-  // עבור כל קטגוריה לפי הסדר
-  categoriesSource.forEach(cat => {
-    const catAds = adsByCat[cat.name];
-    if (!catAds || !catAds.length) return;
-    // כותרת קטגוריה
-    const title = document.createElement('div');
-    title.className = 'ads-category-title';
-    title.id = 'cat-' + cat.name.replace(/\s+/g, '-');
-    title.style = `font-size:22px;font-weight:bold;margin:28px 0 10px 0;display:flex;align-items:center;gap:8px;color:${cat.color}`;
-    title.innerHTML = `<span style='font-size:28px;'>${cat.icon||''}</span><span>${cat.name}</span>`;
-    board.appendChild(title);
-    // כל המודעות של הקטגוריה
-    catAds.slice().reverse().forEach(ad => {
-      const el = document.createElement('article');
-      el.className = 'ad-card';
-      let imgHtml = ad.img ? `<img class="ad-image a4-image" src="${ad.img}" alt="מודעה">` : '';
-      let dynamicHtml = '';
-      if(ad.dynamic && ad.dynamic.length) {
-        dynamicHtml = ad.dynamic.map(d=>`${d.field}: ${d.value}`).join(' | ');
+        // עדכון תפריט הקטגוריות
+        updateCategoriesMenu(Object.fromEntries(adsByCat), categoriesSource);
+
+        // רינדור מודעות לפי קטגוריות עם performance optimization
+        const adsFragment = document.createDocumentFragment();
+        
+        for (const cat of categoriesSource) {
+          const catAds = adsByCat.get(cat.name);
+          if (!catAds?.length) continue;
+          
+          // כותרת קטגוריה
+          const title = document.createElement('div');
+          title.className = 'ads-category-title';
+          title.id = `cat-${cat.name.replace(/\s+/g, '-')}`;
+          title.setAttribute('role', 'heading');
+          title.setAttribute('aria-level', '2');
+          title.style.cssText = `font-size:22px;font-weight:bold;margin:28px 0 10px 0;display:flex;align-items:center;gap:8px;color:${cat.color}`;
+          title.innerHTML = `<span style='font-size:28px;' aria-hidden="true">${cat.icon||''}</span><span>${cat.name}</span>`;
+          adsFragment.appendChild(title);
+          
+          // מודעות הקטגוריה
+          catAds.slice().reverse().forEach(ad => {
+            const adElement = createAdElement(ad);
+            if (adElement) adsFragment.appendChild(adElement);
+          });
+        }
+        
+        // הוספת מודעות ללא קטגוריה
+        const uncategorizedAds = adsByCat.get('ללא קטגוריה');
+        if (uncategorizedAds?.length) {
+          const title = document.createElement('div');
+          title.className = 'ads-category-title';
+          title.setAttribute('role', 'heading');
+          title.setAttribute('aria-level', '2');
+          title.style.cssText = 'font-size:22px;font-weight:bold;margin:28px 0 10px 0;display:flex;align-items:center;gap:8px;color:#888';
+          title.innerHTML = `<span>ללא קטגוריה</span>`;
+          adsFragment.appendChild(title);
+          
+          uncategorizedAds.slice().reverse().forEach(ad => {
+            const adElement = createAdElement(ad);
+            if (adElement) adsFragment.appendChild(adElement);
+          });
+        }
+        
+        // הוספה אחת של כל המודעות
+        board.appendChild(adsFragment);
+        
+      } catch (error) {
+        console.error('Error rendering ads:', error);
+        // Fallback UI
+        const board = document.getElementById('adsBoard');
+        if (board) {
+          board.innerHTML = '<div class="error-message">שגיאה בטעינת המודעות. אנא רענן את הדף.</div>';
+        }
       }
-      el.innerHTML = `
-        ${imgHtml}
-        <div class="ad-content">${ad.content || ad.title || ''}</div>
-        <div class="ad-location">
-          ${ad.city ? `<span class='ad-city'>עיר: ${ad.city}</span>` : ''}
-          ${(ad.neighborhood && ad.neighborhood !== '') ? `<span class='ad-neighborhood'> | שכונה: ${ad.neighborhood}</span>` : ''}
-        </div>
-        <div class="ad-dynamic">${dynamicHtml}</div>
-        <div class="ad-actions">
-          <button class="ad-btn whatsapp">📞 ${ad.phone || ''} ${ad.whatsapp ? '<span>וואטסאפ</span>' : ''}</button>
-          ${ad.link ? `<button class="ad-btn link" onclick="window.open('${ad.link}','_blank')">🔗 קישור</button>` : ''}
-          ${ad.email ? `<button class="ad-btn email" onclick="window.location.href='mailto:${ad.email}'">✉️ שלח הודעה</button>` : ''}
-        </div>
-      `;
-      board.appendChild(el);
-    });
-  });
-  // מודעות ללא קטגוריה (אם יש)
-  if (adsByCat['ללא קטגוריה']) {
-    const title = document.createElement('div');
-    title.className = 'ads-category-title';
-    title.style = 'font-size:22px;font-weight:bold;margin:28px 0 10px 0;display:flex;align-items:center;gap:8px;color:#888';
-    title.innerHTML = `<span>ללא קטגוריה</span>`;
-    board.appendChild(title);
-    adsByCat['ללא קטגוריה'].slice().reverse().forEach(ad => {
-      const el = document.createElement('article');
-      el.className = 'ad-card';
-      let imgHtml = ad.img ? `<img class=\"ad-image a4-image\" src=\"${ad.img}\" alt=\"מודעה\">` : '';
-      let dynamicHtml = '';
-      if(ad.dynamic && ad.dynamic.length) {
-        dynamicHtml = ad.dynamic.map(d=>`${d.field}: ${d.value}`).join(' | ');
+    };
+
+    // פונקציה ליצירת אלמנט מודעה
+    const createAdElement = (ad) => {
+      try {
+        const el = document.createElement('article');
+        el.className = 'ad-card';
+        el.setAttribute('role', 'article');
+        el.setAttribute('aria-label', `מודעה: ${ad.content || ad.title || 'ללא כותרת'}`);
+        
+        const imgHtml = ad.img ? 
+          `<img class="ad-image a4-image" src="${ad.img}" alt="תמונת מודעה" loading="lazy">` : 
+          '';
+        
+        const dynamicHtml = ad.dynamic?.length ? 
+          ad.dynamic.map(d => `${DataValidator.sanitizeHtml(d.field)}: ${DataValidator.sanitizeHtml(d.value)}`).join(' | ') :
+          '';
+          
+        const locationHtml = `
+          ${ad.city ? `<span class='ad-city'>עיר: ${DataValidator.sanitizeHtml(ad.city)}</span>` : ''}
+          ${(ad.neighborhood && ad.neighborhood !== '') ? ` | שכונה: ${DataValidator.sanitizeHtml(ad.neighborhood)}` : ''}
+        `.trim();
+        
+        el.innerHTML = `
+          ${imgHtml}
+          <div class="ad-content">${DataValidator.sanitizeHtml(ad.content || ad.title || '')}</div>
+          ${locationHtml ? `<div class="ad-location">${locationHtml}</div>` : ''}
+          <div class="ad-dynamic">${dynamicHtml}</div>
+          <div class="ad-actions">
+            ${ad.phone ? `<button class="ad-btn whatsapp" aria-label="התקשר ל${ad.phone}">📞 ${DataValidator.sanitizeHtml(ad.phone)} ${ad.whatsapp ? '<span>וואטסאפ</span>' : ''}</button>` : ''}
+            ${ad.link && DataValidator.isValidUrl(ad.link) ? `<button class="ad-btn link" onclick="window.open('${ad.link}','_blank')" aria-label="פתח קישור חיצוני">🔗 קישור</button>` : ''}
+            ${ad.email && DataValidator.isValidEmail(ad.email) ? `<button class="ad-btn email" onclick="window.location.href='mailto:${ad.email}'" aria-label="שלח אימייל ל${ad.email}">✉️ שלח הודעה</button>` : ''}
+          </div>
+        `;
+        
+        return el;
+      } catch (error) {
+        console.error('Error creating ad element:', error);
+        return null;
       }
-      el.innerHTML = `
-        ${imgHtml}
-        <div class=\"ad-content\">${ad.content || ad.title || ''}</div>
-        <div class=\"ad-dynamic\">${dynamicHtml}</div>
-        <div class=\"ad-actions\">
-          <button class=\"ad-btn whatsapp\">📞 ${ad.phone || ''} ${ad.whatsapp ? '<span>וואטסאפ</span>' : ''}</button>
-          ${ad.link ? `<button class=\"ad-btn link\" onclick=\"window.open('${ad.link}','_blank')\">🔗 קישור</button>` : ''}
-          ${ad.email ? `<button class=\"ad-btn email\" onclick=\"window.location.href='mailto:${ad.email}'\">✉️ שלח הודעה</button>` : ''}
-        </div>
-      `;
-      board.appendChild(el);
-    });
-  }
-}
+    };
 window.addEventListener('DOMContentLoaded', renderAds);
     </script>
   </div>
@@ -1019,6 +1165,132 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
-</script>
-</body>
-</html>
+
+// Utility functions for data validation and sanitization
+const DataValidator = {
+  // בדיקת תקינות מודעה
+  validateAd(ad) {
+    if (!ad || typeof ad !== 'object') return false;
+    
+    // בדיקת שדות חובה
+    const hasContent = ad.content || ad.title || ad.img;
+    if (!hasContent) return false;
+    
+    // בדיקת אורך תוכן
+    if (ad.content && ad.content.length > 5000) return false;
+    if (ad.title && ad.title.length > 200) return false;
+    
+    // בדיקת פורמט טלפון
+    if (ad.phone && !this.isValidPhone(ad.phone)) return false;
+    
+    // בדיקת פורמט אימייל
+    if (ad.email && !this.isValidEmail(ad.email)) return false;
+    
+    // בדיקת URL
+    if (ad.link && !this.isValidUrl(ad.link)) return false;
+    
+    return true;
+  },
+
+  // בדיקת תקינות מספר טלפון
+  isValidPhone(phone) {
+    const phoneRegex = /^[\d\-\s\+\(\)]{7,15}$/;
+    return phoneRegex.test(phone);
+  },
+
+  // בדיקת תקינות אימייל
+  isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  },
+
+  // בדיקת תקינות URL
+  isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  // ניקוי HTML מתוכן
+  sanitizeHtml(text) {
+    if (typeof text !== 'string') return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  },
+
+  // בדיקת תקינות קטגוריה
+  isValidCategory(category) {
+    if (!category || typeof category !== 'string') return false;
+    if (!window.categoriesData) return true; // אם אין נתוני קטגוריות, מאשרים הכל
+    return window.categoriesData.some(cat => cat.name === category);
+  }
+};
+
+// Error handling wrapper for localStorage operations
+const SafeStorage = {
+  get(key, defaultValue = null) {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+      console.error(`Error reading from localStorage (${key}):`, error);
+      return defaultValue;
+    }
+  },
+
+  set(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error(`Error writing to localStorage (${key}):`, error);
+      return false;
+    }
+  },
+
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+      return true;
+    } catch (error) {
+      console.error(`Error removing from localStorage (${key}):`, error);
+      return false;
+    }
+  }
+};
+
+// הוספת אפקט סקרול לתפריט העליון
+let lastScrollTop = 0;
+let isScrolling = false;
+
+function handleHeaderScroll() {
+  const header = document.querySelector('header');
+  const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+  
+  if (currentScroll > lastScrollTop && currentScroll > 100) {
+    // גלילה למטה - הקטן מעט את הhader
+    header.style.transform = 'translateY(-10px)';
+    header.style.boxShadow = '0 2px 15px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1)';
+  } else {
+    // גלילה למעלה או בראש העמוד - החזר למקום
+    header.style.transform = 'translateY(0)';
+    header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)';
+  }
+  
+  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+}
+
+// הוספת event listener לסקרול עם throttling
+let scrollTimeout;
+window.addEventListener('scroll', function() {
+  if (!scrollTimeout) {
+    scrollTimeout = setTimeout(function() {
+      handleHeaderScroll();
+      scrollTimeout = null;
+    }, 10);
+  }
+});
