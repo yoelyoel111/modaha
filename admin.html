@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ממשק ניהול - מודעות הצפון</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { 
+      font-family: 'Heebo', Arial, sans-serif; 
+      background: #f7fafc; 
+      margin: 0; 
+      padding: 0;
+    }
+    
+    .admin-header {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px 0;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .admin-title {
+      color: #0099cc;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .admin-subtitle {
+      color: #666;
+      font-size: 16px;
+      margin: 5px 0 0 0;
+    }
+    
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .admin-tabs {
+      display: flex;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    
+    .admin-tab {
+      flex: 1;
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.3s ease;
+      border-left: 1px solid #e9ecef;
+    }
+    
+    .admin-tab:first-child {
+      border-left: none;
+    }
+    
+    .admin-tab.active {
+      background: #0099cc;
+      color: white;
+    }
+    
+    .admin-tab:hover:not(.active) {
+      background: #e9ecef;
+    }
+    
+    .tab-content {
+      display: none;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+      min-height: 500px;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .tab-title {
+      color: #0099cc;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    /* סגנונות לטאב הקטגוריות */
+    .categories-section {
+      margin-bottom: 30px;
+    }
+    
+    .add-cat-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    
+    .add-cat-form input, .add-cat-form button {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+    
+    .add-cat-form input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .add-cat-form input[type="color"] {
+      width: 50px;
+      height: 42px;
+      padding: 2px;
+    }
+    
+    .add-cat-form button {
+      background: #0099cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    
+    .add-cat-form button:hover {
+      background: #0088bb;
+    }
+    
+    .categories-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      padding: 15px;
+      cursor: grab;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .category-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .category-item.dragging {
+      opacity: 0.5;
+      border: 2px dashed #0099cc;
+    }
+    
+    .category-color {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      cursor: pointer;
+    }
+    
+    .category-icon {
+      font-size: 24px;
+      cursor: pointer;
+      width: 30px;
+      text-align: center;
+    }
+    
+    .category-name {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .cat-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .cat-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .cat-btn.delete {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .cat-btn.delete:hover {
+      background: #c82333;
+    }
+    
+    .save-categories-btn {
+      width: 100%;
+      padding: 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.3s;
+    }
+    
+    .save-categories-btn:hover {
+      background: #218838;
+    }
+    
+    /* סגנונות לטאב המודעות */
+    .ads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .ad-card-admin {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.3s;
+    }
+    
+    .ad-card-admin:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .ad-image-preview {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #e9ecef;
+    }
+    
+    .ad-info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    
+    .ad-actions-admin {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .ad-btn-admin {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .ad-btn-admin.edit {
+      background: #ffc107;
+      color: #212529;
+    }
+    
+    .ad-btn-admin.delete {
+      background: #dc3545;
+      color: white;
+    }
+    
+    /* סגנונות לטאב הגיליון */
+    .issue-form {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #0099cc;
+      box-shadow: 0 0 0 2px rgba(0, 153, 204, 0.1);
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .date-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    
+    .create-issue-btn {
+      width: 100%;
+      padding: 15px;
+      background: #0099cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .create-issue-btn:hover {
+      background: #0088bb;
+    }
+    
+    .issues-list {
+      margin-top: 30px;
+    }
+    
+    .issue-item {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .issue-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0099cc;
+    }
+    
+    .issue-dates {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .issue-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-tabs {
+        flex-direction: column;
+      }
+      
+      .admin-tab {
+        border-left: none;
+        border-bottom: 1px solid #e9ecef;
+      }
+      
+      .admin-tab:last-child {
+        border-bottom: none;
+      }
+      
+      .add-cat-form {
+        flex-direction: column;
+      }
+      
+      .date-inputs {
+        grid-template-columns: 1fr;
+      }
+      
+      .ads-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1 class="admin-title">ממשק ניהול</h1>
+    <p class="admin-subtitle">מודעות הצפון - ניהול האתר</p>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('categories')">
+        ⚙️ ניהול קטגוריות
+      </button>
+      <button class="admin-tab" onclick="switchTab('ads')">
+        📋 ניהול מודעות
+      </button>
+      <button class="admin-tab" onclick="switchTab('issues')">
+        📅 הוספת גיליון
+      </button>
+    </div>
+
+    <!-- טאב ניהול קטגוריות -->
+    <div id="categories-tab" class="tab-content active">
+      <h2 class="tab-title">ניהול קטגוריות</h2>
+      
+      <div class="categories-section">
+        <form class="add-cat-form" onsubmit="addCategory(event)">
+          <input type="text" id="newCatName" placeholder="שם קטגוריה" required>
+          <input type="color" id="newCatColor" value="#0099cc" title="בחר צבע">
+          <input type="text" id="newCatIcon" placeholder="אייקון (אימוג'י)" maxlength="2">
+          <button type="submit">➕ הוסף קטגוריה</button>
+        </form>
+        
+        <ul class="categories-list" id="categoriesList">
+          <!-- קטגוריות יופיעו כאן -->
+        </ul>
+        
+        <button class="save-categories-btn" onclick="saveCategories()">
+          💾 שמור שינויים
+        </button>
+      </div>
+    </div>
+
+    <!-- טאב ניהול מודעות -->
+    <div id="ads-tab" class="tab-content">
+      <h2 class="tab-title">ניהול מודעות</h2>
+      
+      <div class="ads-stats">
+        <p>סה"כ מודעות: <span id="totalAds">0</span></p>
+      </div>
+      
+      <div class="ads-grid" id="adsGrid">
+        <!-- מודעות יופיעו כאן -->
+      </div>
+    </div>
+
+    <!-- טאב הוספת גיליון -->
+    <div id="issues-tab" class="tab-content">
+      <h2 class="tab-title">הוספת גיליון שבועי</h2>
+      
+      <div class="issue-form">
+        <form onsubmit="createIssue(event)">
+          <div class="form-group">
+            <label class="form-label" for="parshaName">פרשת השבוע:</label>
+            <input type="text" id="parshaName" class="form-input" placeholder="לדוגמה: פרשת בראשית" required>
+          </div>
+          
+          <div class="form-group">
+            <div class="date-inputs">
+              <div>
+                <label class="form-label" for="hebrewDate">תאריך עברי:</label>
+                <input type="text" id="hebrewDate" class="form-input" placeholder="לדוגמה: כ״ה תשרי תשפ״ה" required>
+              </div>
+              <div>
+                <label class="form-label" for="gregorianDate">תאריך לועזי:</label>
+                <input type="date" id="gregorianDate" class="form-input" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="issueDescription">תיאור הגיליון:</label>
+            <textarea id="issueDescription" class="form-input form-textarea" placeholder="תיאור קצר של הגיליון השבועי..."></textarea>
+          </div>
+          
+          <button type="submit" class="create-issue-btn">
+            📅 צור גיליון חדש
+          </button>
+        </form>
+      </div>
+      
+      <div class="issues-list">
+        <h3>גיליונות קיימים:</h3>
+        <div id="issuesList">
+          <!-- גיליונות יופיעו כאן -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="categories-data.js"></script>
+  <script>
+    // משתנים גלובליים
+    let categories = [];
+    let ads = [];
+    let issues = [];
+    let dragSrcIdx = null;
+
+    // טעינת נתונים בעת טעינת הדף
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCategories();
+      loadAds();
+      loadIssues();
+      initializeDefaultIssue();
+      renderCategories();
+      renderAds();
+      renderIssues();
+    });
+
+    // פונקציות ניהול טאבים
+    function switchTab(tabName) {
+      // הסרת הפעלה מכל הטאבים
+      document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // הפעלת הטאב הנבחר
+      event.target.classList.add('active');
+      document.getElementById(tabName + '-tab').classList.add('active');
+    }
+
+    // פונקציות ניהול קטגוריות
+    function loadCategories() {
+      const savedOrder = localStorage.getItem('categoriesOrder');
+      if (savedOrder) {
+        try {
+          categories = JSON.parse(savedOrder);
+        } catch(e) {
+          categories = window.categoriesData ? [...window.categoriesData] : [];
+        }
+      } else {
+        categories = window.categoriesData ? [...window.categoriesData] : [];
+      }
+    }
+
+    function renderCategories() {
+      const list = document.getElementById('categoriesList');
+      list.innerHTML = '';
+      
+      categories.forEach((cat, idx) => {
+        const li = document.createElement('li');
+        li.className = 'category-item';
+        li.draggable = true;
+        
+        li.ondragstart = e => { 
+          dragSrcIdx = idx; 
+          li.classList.add('dragging'); 
+        };
+        li.ondragend = e => { 
+          dragSrcIdx = null; 
+          li.classList.remove('dragging'); 
+        };
+        li.ondragover = e => { 
+          e.preventDefault(); 
+        };
+        li.ondrop = e => { 
+          e.preventDefault(); 
+          if (dragSrcIdx !== null && dragSrcIdx !== idx) { 
+            const moved = categories.splice(dragSrcIdx, 1)[0]; 
+            categories.splice(idx, 0, moved); 
+            renderCategories(); 
+          } 
+        };
+        
+        li.innerHTML = `
+          <span class="category-color" style="background:${cat.color}" onclick="changeColor(${idx})" title="שנה צבע"></span>
+          <span class="category-icon" onclick="changeIcon(${idx})" title="שנה אייקון">${cat.icon || '📌'}</span>
+          <span class="category-name">${cat.name}</span>
+          <div class="cat-actions">
+            <button class="cat-btn delete" onclick="deleteCategory(${idx})">מחק</button>
+          </div>
+        `;
+        
+        list.appendChild(li);
+      });
+    }
+
+    function addCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCatName').value.trim();
+      const color = document.getElementById('newCatColor').value;
+      const icon = document.getElementById('newCatIcon').value.trim();
+      
+      if (!name) return;
+      
+      categories.push({name, color, icon: icon || '📌'});
+      renderCategories();
+      
+      // ניקוי הטופס
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatIcon').value = '';
+    }
+
+    function deleteCategory(idx) {
+      if (confirm('האם אתה בטוח שברצונך למחוק את הקטגוריה?')) {
+        categories.splice(idx, 1);
+        renderCategories();
+      }
+    }
+
+    function changeColor(idx) {
+      const color = prompt('הזן קוד צבע (HEX):', categories[idx].color);
+      if (color) {
+        categories[idx].color = color;
+        renderCategories();
+      }
+    }
+
+    function changeIcon(idx) {
+      const icon = prompt('הזן אייקון (אימוג׳י):', categories[idx].icon);
+      if (icon !== null) {
+        categories[idx].icon = icon || '📌';
+        renderCategories();
+      }
+    }
+
+    function saveCategories() {
+      localStorage.setItem('categoriesOrder', JSON.stringify(categories));
+      alert('הקטגוריות נשמרו בהצלחה!');
+    }
+
+    // פונקציות ניהול מודעות
+    function loadAds() {
+      const savedAds = localStorage.getItem('ads');
+      if (savedAds) {
+        try {
+          ads = JSON.parse(savedAds);
+        } catch(e) {
+          ads = [];
+        }
+      }
+    }
+
+    function renderAds() {
+      const grid = document.getElementById('adsGrid');
+      const totalAdsSpan = document.getElementById('totalAds');
+      
+      grid.innerHTML = '';
+      totalAdsSpan.textContent = ads.length;
+      
+      if (ads.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; color: #666; grid-column: 1 / -1;">אין מודעות להצגה</p>';
+        return;
+      }
+      
+      ads.forEach((ad, idx) => {
+        const adCard = document.createElement('div');
+        adCard.className = 'ad-card-admin';
+        
+        adCard.innerHTML = `
+          ${ad.image ? `<img src="${ad.image}" alt="מודעה" class="ad-image-preview">` : '<div class="ad-image-preview" style="display: flex; align-items: center; justify-content: center; color: #999;">אין תמונה</div>'}
+          <div class="ad-info"><strong>קטגוריה:</strong> ${ad.category || 'לא צוין'}</div>
+          <div class="ad-info"><strong>עיר:</strong> ${ad.city || 'לא צוין'}</div>
+          <div class="ad-info"><strong>תאריך:</strong> ${ad.date || 'לא צוין'}</div>
+          ${ad.content ? `<div class="ad-info"><strong>תוכן:</strong> ${ad.content.substring(0, 50)}...</div>` : ''}
+          <div class="ad-actions-admin">
+            <button class="ad-btn-admin edit" onclick="editAd(${idx})">ערוך</button>
+            <button class="ad-btn-admin delete" onclick="deleteAd(${idx})">מחק</button>
+          </div>
+        `;
+        
+        grid.appendChild(adCard);
+      });
+    }
+
+    function editAd(idx) {
+      // כאן ניתן להוסיף פונקציונליות עריכה
+      alert('פונקציית עריכה תתווסף בעתיד');
+    }
+
+    function deleteAd(idx) {
+      if (confirm('האם אתה בטוח שברצונך למחוק את המודעה?')) {
+        ads.splice(idx, 1);
+        localStorage.setItem('ads', JSON.stringify(ads));
+        renderAds();
+      }
+    }
+
+    // פונקציות ניהול גיליונות
+    function loadIssues() {
+      const savedIssues = localStorage.getItem('weeklyIssues');
+      if (savedIssues) {
+        try {
+          issues = JSON.parse(savedIssues);
+        } catch(e) {
+          issues = [];
+        }
+      }
+    }
+
+    function initializeDefaultIssue() {
+      // בדיקה אם יש כבר גיליונות
+      if (issues.length === 0) {
+        // יצירת הגיליון הנוכחי כברירת מחדל
+        const defaultIssue = {
+          id: Date.now(),
+          parshaName: 'פרשת מטות-מסעי',
+          hebrewDate: 'כ"ד בתמוז תשפ"ה',
+          gregorianDate: '2025-07-20',
+          description: 'הגיליון הנוכחי של מודעות הצפון',
+          createdAt: new Date().toISOString(),
+          isActive: true // סימון שזה הגיליון הפעיל
+        };
+        
+        issues.push(defaultIssue);
+        localStorage.setItem('weeklyIssues', JSON.stringify(issues));
+      } else {
+        // וידוא שיש גיליון פעיל
+        const hasActiveIssue = issues.some(issue => issue.isActive);
+        if (!hasActiveIssue && issues.length > 0) {
+          issues[0].isActive = true;
+          localStorage.setItem('weeklyIssues', JSON.stringify(issues));
+        }
+      }
+    }
+
+    function renderIssues() {
+      const list = document.getElementById('issuesList');
+      list.innerHTML = '';
+      
+      if (issues.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: #666;">אין גיליונות להצגה</p>';
+        return;
+      }
+      
+      issues.forEach((issue, idx) => {
+        const issueDiv = document.createElement('div');
+        issueDiv.className = 'issue-item';
+        
+        // הדגשת הגיליון הפעיל
+        if (issue.isActive) {
+          issueDiv.style.border = '2px solid #0099cc';
+          issueDiv.style.background = '#f0f8ff';
+        }
+        
+        issueDiv.innerHTML = `
+          <div class="issue-header">
+            <div class="issue-title" style="${issue.isActive ? 'color: #0099cc; font-weight: bold;' : ''}">
+              ${issue.parshaName} ${issue.isActive ? '(פעיל)' : '(מכובה)'}
+            </div>
+            <div class="issue-actions">
+              <button class="ad-btn-admin" style="background: ${issue.isActive ? '#dc3545' : '#28a745'};" onclick="toggleIssueStatus(${idx})">
+                ${issue.isActive ? 'כבה' : 'הפעל'}
+              </button>
+              <button class="ad-btn-admin delete" onclick="deleteIssue(${idx})">מחק</button>
+            </div>
+          </div>
+          <div class="issue-dates">
+            <strong>תאריך עברי:</strong> ${issue.hebrewDate} | 
+            <strong>תאריך לועזי:</strong> ${new Date(issue.gregorianDate).toLocaleDateString('he-IL')}
+          </div>
+          ${issue.description ? `<div style="margin-top: 10px; color: #666;">${issue.description}</div>` : ''}
+        `;
+        
+        list.appendChild(issueDiv);
+      });
+    }
+
+    function toggleIssueStatus(idx) {
+      // החלפת סטטוס הגיליון (עצמאי)
+      issues[idx].isActive = !issues[idx].isActive;
+      localStorage.setItem('weeklyIssues', JSON.stringify(issues));
+      renderIssues();
+      const status = issues[idx].isActive ? 'הופעל' : 'כובה';
+      alert(`הגיליון ${status} בהצלחה!`);
+    }
+
+    function createIssue(e) {
+      e.preventDefault();
+      
+      const parshaName = document.getElementById('parshaName').value.trim();
+      const hebrewDate = document.getElementById('hebrewDate').value.trim();
+      const gregorianDate = document.getElementById('gregorianDate').value;
+      const description = document.getElementById('issueDescription').value.trim();
+      
+      if (!parshaName || !hebrewDate || !gregorianDate) {
+        alert('אנא מלא את כל השדות הנדרשים');
+        return;
+      }
+      
+      const newIssue = {
+        id: Date.now(),
+        parshaName,
+        hebrewDate,
+        gregorianDate,
+        description,
+        createdAt: new Date().toISOString(),
+        isActive: false // גיליון חדש לא פעיל כברירת מחדל
+      };
+      
+      issues.unshift(newIssue); // הוספה לתחילת הרשימה
+      localStorage.setItem('weeklyIssues', JSON.stringify(issues));
+      
+      // ניקוי הטופס
+      document.getElementById('parshaName').value = '';
+      document.getElementById('hebrewDate').value = '';
+      document.getElementById('gregorianDate').value = '';
+      document.getElementById('issueDescription').value = '';
+      
+      renderIssues();
+      alert('הגיליון נוצר בהצלחה!');
+    }
+
+    function editIssue(idx) {
+      const issue = issues[idx];
+      document.getElementById('parshaName').value = issue.parshaName;
+      document.getElementById('hebrewDate').value = issue.hebrewDate;
+      document.getElementById('gregorianDate').value = issue.gregorianDate;
+      document.getElementById('issueDescription').value = issue.description || '';
+      
+      // מחיקת הגיליון הישן
+      issues.splice(idx, 1);
+      localStorage.setItem('weeklyIssues', JSON.stringify(issues));
+      renderIssues();
+      
+      // מעבר לטאב הוספת גיליון
+      switchTab('issues');
+    }
+
+    function deleteIssue(idx) {
+      if (confirm('האם אתה בטוח שברצונך למחוק את הגיליון?')) {
+        issues.splice(idx, 1);
+        localStorage.setItem('weeklyIssues', JSON.stringify(issues));
+        renderIssues();
+      }
+    }
+  </script>
+</body>
+</html>

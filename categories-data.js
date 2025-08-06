@@ -1,5 +1,41 @@
 // קובץ קטגוריות מרכזי - יש לטעון אותו גם בדף הבית וגם בדף הניהול
 // כל קטגוריה: שם, צבע, אייקון (ניתן להוסיף/לשנות בהמשך)
+// מפת צבעים לוגית לקטגוריות
+const categoryColorsByName = {
+  'בריאות': '#4caf50',
+  'מכון כושר': '#ba68c8',
+  'מסעדות': '#ff9800',
+  'קייטרינג': '#8bc34a',
+  'הובלות': '#0099cc',
+  'ריהוט': '#8d6e63',
+  'עיצוב הבית': '#ffb300',
+  'ביגוד': '#e57373',
+  'הנעלה': '#a1887f',
+  'חסד': '#ffd600',
+  'פינות ישיבה': '#81d4fa',
+  'נופש': '#ffd54f',
+  'ציוד משרדי': '#90caf9',
+  'ציוד לגנים': '#aed581',
+  'נשים': '#f06292',
+  'משלוחים': '#4dd0e1',
+  'דיור': '#ffb300',
+  'רואי חשבון': '#607d8b',
+  'עורכי דין': '#ff8a65',
+  'הרצאות': '#ffd600',
+  'צילום': '#90a4ae',
+  'מחשבים': '#1976d2',
+  'סלולר': '#00bcd4',
+  'שיפוצים': '#8d6e63',
+  'חינוך': '#fbc02d',
+  'רפואה טבעית': '#388e3c',
+  'השכרת רכב': '#ffa726',
+  'תחבורה': '#2196f3',
+  'יד 2': '#ffb300',
+  'השבת אבידה': '#e57373',
+  'פסח': '#ffd600',
+  'דרושים': '#00bfae',
+};
+
 window.categoriesData = [
   {name: 'פסח', color: '#ffd600', icon: '🌸'},
   {name: 'הובלות', color: '#0099cc', icon: '🚚'},
@@ -35,3 +71,10 @@ window.categoriesData = [
   {name: 'יד 2', color: '#ffb300', icon: '🔄'},
   {name: 'השבת אבידה', color: '#e57373', icon: '🧩'}
 ];
+
+// עדכון צבע אוטומטי לקטגוריות ללא color
+window.categoriesData.forEach(cat => {
+  if (!cat.color && categoryColorsByName[cat.name]) {
+    cat.color = categoryColorsByName[cat.name];
+  }
+});

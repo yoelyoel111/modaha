@@ -1,5 +1,21 @@
 // סרגל סינון מתקדם לערים ושכונות - עיצוב מודרני
 window.addEventListener('DOMContentLoaded', function() {
+  // סגירת חלון הסינון בלחיצה מחוץ אליו
+  document.addEventListener('mousedown', function(event) {
+    const filterBar = document.getElementById('filterBar');
+    if (!filterBar) return;
+    if (filterBar.style.display === 'block') {
+      // אם נלחץ מחוץ ל-filter-bar
+      // לא נסגור אם נלחץ על צ'קבוקס שכונה
+      if (!event.target.closest('.filter-bar')) {
+        closeFilterBar();
+      }
+      // אם נלחץ על צ'קבוקס שכונה - לא נסגור
+      if (event.target.classList && event.target.classList.contains('neighborhood-checkbox')) {
+        return;
+      }
+    }
+  });
   const openBtn = document.getElementById('openFilterBarBtn');
   const filterBar = document.getElementById('filterBar');
   const overlay = document.getElementById('filterBarOverlay');
@@ -59,6 +75,9 @@ window.addEventListener('DOMContentLoaded', function() {
     return counts;
   }
 
+  // משתנה גלובלי לשמירת העיר שתפריט השכונות שלה פתוח
+  let openNeighborhoodCity = window.openNeighborhoodCity || null;
+
   function renderFilterBar() {
     filterBar.innerHTML = '';
     
@@ -98,6 +117,10 @@ window.addEventListener('DOMContentLoaded', function() {
     const validCities = window.citiesData.filter(city => city.name && city.name !== 'כללי');
     validCities.forEach(city => {
       const cityBtn = createCityFilterButton(city, adsCounts);
+      // אם זו העיר שפתוחה, פתח את התפריט שלה
+      if (openNeighborhoodCity === city.name) {
+        cityBtn.classList.add('open');
+      }
       filtersContainer.appendChild(cityBtn);
     });
     
@@ -141,6 +164,8 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   function createCityFilterButton(city, adsCounts) {
+    // נשתמש במשתנה גלובלי כדי לדעת איזו עיר פתוחה
+    openNeighborhoodCity = window.openNeighborhoodCity || null;
     const isCitySelected = selectedFilters.cities.includes(city.name);
     const hasNeighborhoods = city.neighborhoods && city.neighborhoods.length > 0;
     const cityAdsCount = adsCounts.cities[city.name] || 0;
@@ -162,6 +187,14 @@ window.addEventListener('DOMContentLoaded', function() {
     cityBtn.insertBefore(cityCheckbox, cityBtn.firstChild);
     
     cityBtn.onclick = function(e) {
+      // שמור איזו עיר פתוחה בתפריט
+      if (hasNeighborhoods && !e.target.matches('input[type="checkbox"]')) {
+        if (cityContainer.classList.contains('open')) {
+          window.openNeighborhoodCity = null;
+        } else {
+          window.openNeighborhoodCity = city.name;
+        }
+      }
       e.stopPropagation();
       
       if (hasNeighborhoods && !e.target.matches('input[type="checkbox"]')) {
@@ -220,9 +253,15 @@ window.addEventListener('DOMContentLoaded', function() {
         `;
         
         const checkbox = neighborhoodItem.querySelector('input');
-        checkbox.onchange = function() {
+        checkbox.onchange = function(e) {
           toggleNeighborhoodSelection(city.name, neighborhood);
+          // מונע סגירה של תפריט השכונות
+          e.stopPropagation();
+          // משאיר את התפריט פתוח
+          window.openNeighborhoodCity = city.name;
+          cityContainer.classList.add('open');
         };
+
         
         neighborhoodsMenu.appendChild(neighborhoodItem);
       });
@@ -333,6 +372,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
   // סגירת תפריטים בלחיצה מחוץ לאזור
   document.addEventListener('click', function(e) {
+    // אם לוחצים על צ'קבוקס שכונה, לא נסגור את תפריט השכונות
+    if (e.target.classList && e.target.classList.contains('neighborhood-checkbox')) {
+      return;
+    }
     if (!e.target.closest('.city-dropdown')) {
       document.querySelectorAll('.city-dropdown').forEach(dropdown => {
         dropdown.classList.remove('open');

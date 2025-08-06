@@ -79,6 +79,12 @@
 
       <div id="cityNeighborhoodBlock"></div>
 
+      <label for="adIssue">בחר גיליון</label>
+      <select id="adIssue" name="adIssue" required>
+        <option value="">בחר גיליון...</option>
+        <!-- גיליונות יטענו דינמית -->
+      </select>
+
       <label>גודל מודעה</label>
       <div class="ad-size-options">
         <label><input type="radio" name="adSize" value="A4" checked> A4</label>
@@ -119,6 +125,40 @@
   <script src="cities-data.js"></script>
   <script src="ad-form-cities.js"></script>
   <script>
+    // טעינת גיליונות בעת טעינת הדף
+    document.addEventListener('DOMContentLoaded', function() {
+      loadIssuesForForm();
+    });
+
+    function loadIssuesForForm() {
+      const issueSelect = document.getElementById('adIssue');
+      const savedIssues = localStorage.getItem('weeklyIssues');
+      
+      if (savedIssues) {
+        try {
+          const issues = JSON.parse(savedIssues);
+          
+          // ניקוי האפשרויות הקיימות
+          issueSelect.innerHTML = '<option value="">בחר גיליון...</option>';
+          
+          issues.forEach((issue, idx) => {
+            const option = document.createElement('option');
+            option.value = issue.id;
+            option.textContent = `${issue.parshaName} (${issue.hebrewDate})`;
+            
+            // בחירת הגיליון הפעיל כברירת מחדל
+            if (issue.isActive) {
+              option.selected = true;
+            }
+            
+            issueSelect.appendChild(option);
+          });
+          
+        } catch(e) {
+          console.log('שגיאה בטעינת הגיליונות:', e);
+        }
+      }
+    }
     // תצוגה מקדימה של תמונה
     document.getElementById('adImage').addEventListener('change', function(e) {
       const file = e.target.files[0];
@@ -139,6 +179,28 @@
     document.getElementById('adForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const form = e.target;
+      // בדיקה אם נבחר גיליון
+      if (!form.adIssue.value) {
+        // הדגשה ויזואלית
+        form.adIssue.style.border = '2px solid red';
+        // הודעת שגיאה
+        let errMsg = document.getElementById('issueErrorMsg');
+        if (!errMsg) {
+          errMsg = document.createElement('div');
+          errMsg.id = 'issueErrorMsg';
+          errMsg.style.color = 'red';
+          errMsg.style.marginBottom = '10px';
+          errMsg.textContent = 'יש לבחור גיליון!';
+          form.adIssue.parentNode.insertBefore(errMsg, form.adIssue.nextSibling);
+        }
+        form.adIssue.focus();
+        return;
+      } else {
+        // הסר הדגשה והודעה אם קיימת
+        form.adIssue.style.border = '';
+        let errMsg = document.getElementById('issueErrorMsg');
+        if (errMsg) errMsg.remove();
+      }
       const ad = {
         title: form.adTitle.value,
         category: form.adCategory.value,
@@ -150,6 +212,7 @@
         whatsapp: form.adWhatsapp.checked,
         link: form.adLink.value,
         email: form.adEmail.value,
+        issueId: form.adIssue.value, // מזהה הגיליון הנבחר
         dynamic: [],
         date: new Date().toLocaleDateString('he-IL'),
       };

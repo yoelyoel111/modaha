@@ -14,7 +14,7 @@
   align-items: center;
   background: #fff;
   box-shadow: 0 2px 8px #e0e0e0;
-  padding: 24px 0 8px 0;
+  padding: 10px 0 8px 0;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -24,9 +24,62 @@
     .subtitle { color: #333; font-size: 18px; margin-bottom: 0; }
 
     .ads-board { flex: 1; display: flex; flex-direction: column; gap: 24px; }
-    .ads-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .ads-header .dates { font-size: 16px; color: #555; }
-    .ads-header .parasha { font-size: 18px; color: #0099cc; font-weight: bold; }
+    /* עיצוב תיבת הפרשה והתאריכים */
+    .parsha-date-box {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .parsha-name {
+      font-size: 24px;
+      color: #2c3e50;
+      font-weight: bold;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    
+    .dates-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: #555;
+    }
+    
+    .hebrew-date {
+      direction: rtl;
+    }
+    
+    .divider {
+      color: #bdc3c7;
+      font-weight: 300;
+    }
+    
+    .gregorian-date {
+      font-family: Arial, sans-serif;
+      letter-spacing: 0.5px;
+    }
+    
+    @media (max-width: 600px) {
+      .parsha-name {
+        font-size: 20px;
+      }
+      
+      .dates-container {
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      .divider {
+        display: none;
+      }
+    }
     .filters { margin-bottom: 18px; }
     .filters select { font-size: 15px; padding: 4px 8px; border-radius: 6px; border: 1px solid #bbb; }
     .ad-card {
@@ -142,7 +195,6 @@
   <!-- Scripts will be loaded at the bottom of the body -->
   <header>
   <div class="header-row">
-    <img class="logo" src="logo-modaot-hatzafon.svg" alt="מודעות הצפון לוגו">
     <nav class="main-nav">
       <button id="openFilterBarBtn" class="nav-btn" title="סינון מתקדם">
         <span class="filter-icon">🔍</span> סינון מתקדם
@@ -150,16 +202,28 @@
       </button>
       <a class="nav-btn" href="advertiser.html">➕ העלאת מודעה</a>
       <a class="nav-btn" href="my-ads.html">📋 המודעות שלי</a>
-      <a class="nav-btn" href="admin-categories.html">⚙️ ניהול קטגוריות</a>
+      <a class="nav-btn" href="admin.html">⚙️ ממשק ניהול</a>
     </nav>
   </div>
-  <div class="subtitle">הלוח הדיגיטלי של הצפון</div>
   
   <!-- תפריט סינון מתקדם מתחת לכפתור -->
   <div id="filterBar" class="filter-bar" style="display: none;"></div>
   
-
   <style>
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      background: #f7fafc; /* צבע רקע אפור בהיר כמו רקע האתר */
+      width: 100%;
+    }
+    
+    .site-logo {
+      max-width: 600px;
+      height: auto;
+      display: block;
+    }
+    
     .header-row {
       display: flex;
       flex-direction: row;
@@ -188,16 +252,10 @@
     }
     @media (max-width: 600px) {
       .header-row { flex-direction: column; gap: 8px; padding: 0 4px; }
-      .logo { width: 120px; margin-left: 0; }
-      .main-nav { gap: 6px; flex-wrap: wrap; }
-      
-      .filter-bar {
-        margin: 5px;
-        padding: 10px;
-        width: 95%;
-        left: 2.5%;
-        transform: none;
-      }
+      .logo { width: 120px; }
+      .main-nav { flex-direction: column; gap: 6px; }
+      .subtitle { font-size: 15px; }
+      /* .filter-bar - הסרנו את העיצוב כאן כדי למנוע סתירה מול style.css */
       
       .filters-container {
         gap: 6px;
@@ -225,22 +283,7 @@
       display: none;
     }
 
-    .filter-bar {
-      position: absolute;
-      top: 100%;
-      right: 20px;
-      width: 90%;
-      max-width: 600px;
-      margin: 0;
-      background: #f8f9fa;
-      border: 1px solid #e9ecef;
-      border-radius: 12px;
-      padding: 15px;
-      direction: rtl;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-      overflow: visible;
-    }
+    
 
     .close-filter-btn {
       position: absolute;
@@ -382,7 +425,7 @@
       border-radius: 8px;
       margin-top: 5px;
       padding: 8px;
-      display: none;
+      /* display: none; הוסר - שלוט רק מה-style.css */
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 9999;
       min-height: 0;
@@ -417,7 +460,6 @@
     }
 
     .city-dropdown.open .neighborhoods-menu {
-      display: block;
       animation: slideDown 0.2s ease-out;
     }
 
@@ -574,13 +616,7 @@
     }
 
     @media (max-width: 480px) {
-      .filter-bar {
-        top: 20px;
-        transform: translateX(-50%);
-        left: 50%;
-        width: 95vw;
-        max-height: calc(100vh - 40px);
-      }
+      /* .filter-bar - הסרנו את העיצוב כאן כדי למנוע סתירה מול style.css */
 
       .filters-container {
         flex-direction: column;
@@ -605,6 +641,24 @@
 
 
 
+  <!-- לוגו האתר -->
+  <div class="logo-container">
+    <img src="mod.gif" alt="לוגו האתר" class="site-logo" id="animatedLogo">
+  </div>
+  
+  <script>
+    // קוד פשוט להצגת GIF ואז החלפה לתמונה סטטית
+    document.addEventListener('DOMContentLoaded', function() {
+      const logo = document.getElementById('animatedLogo');
+      
+      // החלף את ה-GIF בתמונה הסטטית אחרי 3 שניות
+      setTimeout(() => {
+        logo.src = 'mod.png';
+        logo.alt = 'לוגו האתר';
+      }, 3000); // 3000 מילישניות = 3 שניות
+    });
+  </script>
+
   <div class="main-layout">
     <!-- סרגל סינון מתקדם -->
     <div id="filterBarOverlay" class="filter-bar-overlay"></div>
@@ -613,9 +667,26 @@
       <ul id="categoriesMenuUl"></ul>
     </nav>
     <main class="ads-board" id="adsBoard">
-      <div class="ads-header">
-        <span class="dates">כ"ד בתמוז תשפ"ה | 20.07.2025</span>
-        <span class="parasha">פרשת מטות-מסעי</span>
+      <!-- תיבת תצוגה לפרשה ותאריכים - אינטראקטיבית -->
+      <div class="parsha-date-box" id="parshaDateBox" style="position: relative;">
+        <!-- כפתורי ניווט בין גיליונות -->
+        <div class="issue-navigation" id="issueNavigation" style="display: none; margin-bottom: 15px; text-align: center;">
+          <button id="prevIssueBtn" onclick="navigateIssue(-1)" style="background: #0099cc; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin: 0 5px; font-size: 14px;">◀ קודם</button>
+          <span id="issueCounter" style="margin: 0 15px; font-size: 14px; color: #666;">1 מתוך 1</span>
+          <button id="nextIssueBtn" onclick="navigateIssue(1)" style="background: #0099cc; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin: 0 5px; font-size: 14px;">הבא ▶</button>
+        </div>
+        
+        <div class="parsha-name" id="parshaName">פרשת מטות-מסעי</div>
+        <div class="dates-container">
+          <span class="hebrew-date" id="hebrewDate">כ"ד בתמוז תשפ"ה</span>
+          <span class="divider">|</span>
+          <span class="gregorian-date" id="gregorianDate">20.07.2025</span>
+        </div>
+        
+        <!-- תפריט בחירת גיליונות (נסתר כברירת מחדל) -->
+        <div class="issues-dropdown" id="issuesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 300px; overflow-y: auto;">
+          <!-- גיליונות יופיעו כאן -->
+        </div>
       </div>
 
       <!-- אפשר להוסיף כאן מודעות נוספות -->
@@ -631,26 +702,314 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js"></script>
   
   <script>
+    // פונקציה לטעינת הגיליון השבועי הנוכחי
+    function loadCurrentWeeklyIssue() {
+  const savedIssues = localStorage.getItem('weeklyIssues');
+  const ads = JSON.parse(localStorage.getItem('ads')||'[]');
+  if (savedIssues) {
+    try {
+      const issues = JSON.parse(savedIssues);
+      // סנן רק גיליונות פעילים
+      const activeIssues = issues.filter(issue => issue.isActive);
+      
+      if (activeIssues.length > 0) {
+        // בדוק אם יש גיליון שנבחר בעבר
+        let selectedIssueId = localStorage.getItem('selectedIssueId');
+        let selectedIssue = selectedIssueId ? activeIssues.find(issue => issue.id == selectedIssueId) : null;
+        if (!selectedIssue) {
+          selectedIssue = activeIssues[0];
+          localStorage.setItem('selectedIssueId', selectedIssue.id);
+        }
+        displayIssue(selectedIssue);
+        // הוסף ממשק מעבר בין גיליונות
+        updateIssueNavigation(activeIssues, selectedIssue);
+        // סנן מודעות לפי הגיליון הנבחר
+        let filteredAds = ads.filter(ad => ad.issueId == selectedIssue.id);
+        // תמיכה בסינון עיר/שכונה קיים
+        const selectedCity = localStorage.getItem('selectedCity');
+        if (selectedCity) {
+          filteredAds = filteredAds.filter(ad => ad.city === selectedCity);
+        }
+        renderAds(filteredAds);
+        if (filteredAds.length === 0) {
+          // ודא שתיבת הגיליון parshaDateBox לא מוסתרת
+          const board = document.getElementById('adsBoard');
+          // מחק הודעות קודמות אם יש
+          let noAdsMsg = document.getElementById('noAdsMsg');
+          if (noAdsMsg) noAdsMsg.remove();
+          // הוסף הודעה מתחת לתיבת הגיליון
+          noAdsMsg = document.createElement('div');
+          noAdsMsg.id = 'noAdsMsg';
+          noAdsMsg.style = 'text-align:center;color:#888;font-size:22px;margin:44px 0;';
+          noAdsMsg.innerText = 'אין מודעות בגיליון זה';
+          const parshaBox = document.getElementById('parshaDateBox');
+          if (parshaBox && parshaBox.parentNode) {
+            parshaBox.parentNode.insertBefore(noAdsMsg, parshaBox.nextSibling);
+          } else {
+            board.appendChild(noAdsMsg);
+          }
+        } else {
+          // הסר הודעת אין מודעות אם יש
+          let noAdsMsg = document.getElementById('noAdsMsg');
+          if (noAdsMsg) noAdsMsg.remove();
+        }
+      } else {
+        // אין גיליונות פעילים
+        const board = document.getElementById('adsBoard');
+        board.innerHTML = '<div style="text-align:center;color:#888;font-size:22px;margin:44px 0;">אין גיליונות פעילים כרגע</div>';
+        document.getElementById('parshaDateBox').style.display = 'none';
+      }
+    } catch(e) {
+      console.log('שגיאה בטעינת הגיליון השבועי:', e);
+    }
+  }
+}
+
+    function displayIssue(issue) {
+      document.getElementById('parshaName').textContent = issue.parshaName;
+      document.getElementById('hebrewDate').textContent = issue.hebrewDate;
+      
+      // עיצוב התאריך הלועזי
+      const gregorianDate = new Date(issue.gregorianDate);
+      const formattedDate = gregorianDate.toLocaleDateString('he-IL');
+      document.getElementById('gregorianDate').textContent = formattedDate;
+    }
+
+    // פונקציה לעדכון ממשק הניווט בין גיליונות
+    function updateIssueNavigation(activeIssues, selectedIssue) {
+      const navigation = document.getElementById('issueNavigation');
+      const counter = document.getElementById('issueCounter');
+      const prevBtn = document.getElementById('prevIssueBtn');
+      const nextBtn = document.getElementById('nextIssueBtn');
+      
+      if (activeIssues.length > 1) {
+        navigation.style.display = 'block';
+        const currentIndex = activeIssues.findIndex(issue => issue.id === selectedIssue.id);
+        counter.textContent = `${currentIndex + 1} מתוך ${activeIssues.length}`;
+        
+        // עדכון מצב הכפתורים
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === activeIssues.length - 1;
+        
+        // עיצוב כפתורים מכובים
+        prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
+        nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
+        prevBtn.style.cursor = prevBtn.disabled ? 'not-allowed' : 'pointer';
+        nextBtn.style.cursor = nextBtn.disabled ? 'not-allowed' : 'pointer';
+      } else {
+        navigation.style.display = 'none';
+      }
+    }
+
+    // פונקציה לניווט בין גיליונות
+    function navigateIssue(direction) {
+      const savedIssues = localStorage.getItem('weeklyIssues');
+      if (!savedIssues) return;
+      
+      try {
+        const issues = JSON.parse(savedIssues);
+        const activeIssues = issues.filter(issue => issue.isActive);
+        const selectedIssueId = localStorage.getItem('selectedIssueId');
+        const currentIndex = activeIssues.findIndex(issue => issue.id == selectedIssueId);
+        
+        let newIndex = currentIndex + direction;
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= activeIssues.length) newIndex = activeIssues.length - 1;
+        
+        if (newIndex !== currentIndex) {
+          const newIssue = activeIssues[newIndex];
+          localStorage.setItem('selectedIssueId', newIssue.id);
+          displayIssue(newIssue);
+          updateIssueNavigation(activeIssues, newIssue);
+          
+          // טען מודעות של הגיליון החדש
+          const ads = JSON.parse(localStorage.getItem('ads')||'[]');
+          let filteredAds = ads.filter(ad => ad.issueId == newIssue.id);
+          const selectedCity = localStorage.getItem('selectedCity');
+          if (selectedCity) {
+            filteredAds = filteredAds.filter(ad => ad.city === selectedCity);
+          }
+          renderAds(filteredAds);
+          
+          if (filteredAds.length === 0) {
+            const board = document.getElementById('adsBoard');
+            let noAdsMsg = document.getElementById('noAdsMsg');
+            if (noAdsMsg) noAdsMsg.remove();
+            noAdsMsg = document.createElement('div');
+            noAdsMsg.id = 'noAdsMsg';
+            noAdsMsg.style = 'text-align:center;color:#888;font-size:22px;margin:44px 0;';
+            noAdsMsg.innerText = 'אין מודעות בגיליון זה';
+            const parshaBox = document.getElementById('parshaDateBox');
+            if (parshaBox && parshaBox.parentNode) {
+              parshaBox.parentNode.insertBefore(noAdsMsg, parshaBox.nextSibling);
+            } else {
+              board.appendChild(noAdsMsg);
+            }
+          } else {
+            let noAdsMsg = document.getElementById('noAdsMsg');
+            if (noAdsMsg) noAdsMsg.remove();
+          }
+        }
+      } catch(e) {
+        console.log('שגיאה בניווט בין גיליונות:', e);
+      }
+    }
+
+    function toggleIssuesMenu() {
+      const dropdown = document.getElementById('issuesDropdown');
+      const isVisible = dropdown.style.display !== 'none';
+      
+      if (isVisible) {
+        dropdown.style.display = 'none';
+      } else {
+        loadIssuesDropdown();
+        dropdown.style.display = 'block';
+      }
+    }
+
+    function loadIssuesDropdown() {
+      const savedIssues = localStorage.getItem('weeklyIssues');
+      const dropdown = document.getElementById('issuesDropdown');
+      
+      if (!savedIssues) {
+        dropdown.innerHTML = '<div style="padding: 15px; text-align: center; color: #666;">אין גיליונות זמינים</div>';
+        return;
+      }
+      
+      try {
+        const issues = JSON.parse(savedIssues);
+        // סנן רק גיליונות פעילים
+        const activeIssues = issues.filter(issue => issue.isActive);
+        dropdown.innerHTML = '';
+        
+        if (activeIssues.length === 0) {
+          dropdown.innerHTML = '<div style="padding: 15px; text-align: center; color: #666;">אין גיליונות פעילים</div>';
+          return;
+        }
+        
+        activeIssues.forEach((issue, idx) => {
+          const issueItem = document.createElement('div');
+          issueItem.style.cssText = `
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+            ${issue.isActive ? 'background: #f0f8ff; border-right: 3px solid #0099cc;' : ''}
+          `;
+          
+          issueItem.innerHTML = `
+            <div style="font-weight: bold; color: ${issue.isActive ? '#0099cc' : '#333'}; margin-bottom: 4px;">
+              ${issue.parshaName} ${issue.isActive ? '(פעיל)' : ''}
+            </div>
+            <div style="font-size: 12px; color: #666;">
+              ${issue.hebrewDate} | ${new Date(issue.gregorianDate).toLocaleDateString('he-IL')}
+            </div>
+          `;
+          
+          issueItem.onmouseover = () => {
+            if (!issue.isActive) issueItem.style.background = '#f8f9fa';
+          };
+          issueItem.onmouseout = () => {
+            if (!issue.isActive) issueItem.style.background = '';
+          };
+          
+          issueItem.onclick = (e) => {
+            e.stopPropagation();
+            selectActiveIssue(issue.id);
+          };
+          
+          dropdown.appendChild(issueItem);
+        });
+        
+        // הוספת קישור לממשק הניהול
+        const adminLink = document.createElement('div');
+        adminLink.style.cssText = `
+          padding: 12px 15px;
+          background: #0099cc;
+          color: white;
+          text-align: center;
+          cursor: pointer;
+          font-weight: bold;
+          border-radius: 0 0 8px 8px;
+        `;
+        adminLink.textContent = '⚙️ ניהול גיליונות';
+        adminLink.onclick = (e) => {
+          e.stopPropagation();
+          window.location.href = 'admin.html';
+        };
+        dropdown.appendChild(adminLink);
+        
+      } catch(e) {
+        dropdown.innerHTML = '<div style="padding: 15px; text-align: center; color: #666;">שגיאה בטעינת הגיליונות</div>';
+      }
+    }
+
+    function selectActiveIssue(issueId) {
+      const savedIssues = localStorage.getItem('weeklyIssues');
+      if (!savedIssues) return;
+      
+      try {
+        const issues = JSON.parse(savedIssues);
+        const activeIssues = issues.filter(issue => issue.isActive);
+        const selectedIssue = activeIssues.find(issue => issue.id == issueId);
+        
+        if (selectedIssue) {
+          displayIssue(selectedIssue);
+          updateIssueNavigation(activeIssues, selectedIssue);
+          document.getElementById('issuesDropdown').style.display = 'none';
+          // שמור מזהה הגיליון הנבחר ב-localStorage
+          localStorage.setItem('selectedIssueId', selectedIssue.id);
+          // טען את כל המודעות
+          let ads = JSON.parse(localStorage.getItem('ads')||'[]');
+          // סנן לפי מזהה גיליון
+          let filteredAds = ads.filter(ad => ad.issueId == selectedIssue.id);
+          // תמיכה בסינון עיר/שכונה קיים
+          const selectedCity = localStorage.getItem('selectedCity');
+          if (selectedCity) {
+            filteredAds = filteredAds.filter(ad => ad.city === selectedCity);
+          }
+          renderAds(filteredAds);
+          // אם אין מודעות - הצג הודעה מתאימה
+          if (filteredAds.length === 0) {
+            const board = document.getElementById('adsBoard');
+            let noAdsMsg = document.getElementById('noAdsMsg');
+            if (noAdsMsg) noAdsMsg.remove();
+            noAdsMsg = document.createElement('div');
+            noAdsMsg.id = 'noAdsMsg';
+            noAdsMsg.style = 'text-align:center;color:#888;font-size:22px;margin:44px 0;';
+            noAdsMsg.innerText = 'אין מודעות בגיליון זה';
+            const parshaBox = document.getElementById('parshaDateBox');
+            if (parshaBox && parshaBox.parentNode) {
+              parshaBox.parentNode.insertBefore(noAdsMsg, parshaBox.nextSibling);
+            } else {
+              board.appendChild(noAdsMsg);
+            }
+          } else {
+            let noAdsMsg = document.getElementById('noAdsMsg');
+            if (noAdsMsg) noAdsMsg.remove();
+          }
+        }
+      } catch(e) {
+        console.log('שגיאה בבחירת גיליון:', e);
+      }
+    }
+
+    // סגירת התפריט בלחיצה מחוץ
+    document.addEventListener('click', function(e) {
+      const dropdown = document.getElementById('issuesDropdown');
+      const parshaBox = document.getElementById('parshaDateBox');
+      
+      if (dropdown && parshaBox && !parshaBox.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+
     // פונקציה לעדכון תפריט הקטגוריות בהתאם למודעות המסוננות
     function updateCategoriesMenu(adsByCat, categoriesSource) {
       const menuUl = document.getElementById('categoriesMenuUl');
       if (!menuUl) return;
       
       menuUl.innerHTML = '';
-      
-      // הוספת קטגוריית "הכל" אם יש יותר מקטגוריה אחת
-      if (Object.keys(adsByCat).length > 1) {
-        const allLi = document.createElement('li');
-        allLi.innerHTML = `<a href="#" style="background-color: #0099cc; color: white;">🏠 הכל</a>`;
-        allLi.style.padding = '10px 8px';
-        allLi.style.marginBottom = '6px';
-        allLi.style.borderRadius = '8px';
-        allLi.style.cursor = 'pointer';
-        allLi.style.display = 'flex';
-        allLi.style.alignItems = 'center';
-        allLi.style.transition = 'background 0.2s, color 0.2s';
-        menuUl.appendChild(allLi);
-      }
       
       // הוספת קטגוריות עם מודעות
       categoriesSource.forEach(cat => {
@@ -750,16 +1109,67 @@
       el.innerHTML = `
         ${imgHtml}
         <div class="ad-content">${ad.content || ad.title || ''}</div>
-        <div class="ad-location">
-          ${ad.city ? `<span class='ad-city'>עיר: ${ad.city}</span>` : ''}
-          ${(ad.neighborhood && ad.neighborhood !== '') ? `<span class='ad-neighborhood'> | שכונה: ${ad.neighborhood}</span>` : ''}
-        </div>
+
         <div class="ad-dynamic">${dynamicHtml}</div>
-        <div class="ad-actions">
-          <button class="ad-btn whatsapp">📞 ${ad.phone || ''} ${ad.whatsapp ? '<span>וואטסאפ</span>' : ''}</button>
-          ${ad.link ? `<button class="ad-btn link" onclick="window.open('${ad.link}','_blank')">🔗 קישור</button>` : ''}
-          ${ad.email ? `<button class="ad-btn email" onclick="window.location.href='mailto:${ad.email}'">✉️ שלח הודעה</button>` : ''}
-        </div>
+        <div class="ad-sidebar">
+  <button class="sidebar-icon phone" title="התקשר" onclick="${ad.phone ? `window.open('tel:${ad.phone}')` : ''}">
+  <span aria-hidden="true">
+    <!-- טלפון חוגה קלאסי -->
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="display:block" xmlns="http://www.w3.org/2000/svg">
+  <!-- שפופרת ארוכה וברורה -->
+  <path d="M6 10 Q16 3 26 10" stroke="#3e2d12" stroke-width="3" fill="none"/>
+  <rect x="4" y="9" width="4" height="3" rx="1.5" fill="#e3d6b2" stroke="#3e2d12" stroke-width="1.2"/>
+  <rect x="24" y="9" width="4" height="3" rx="1.5" fill="#e3d6b2" stroke="#3e2d12" stroke-width="1.2"/>
+  <!-- גוף מובלט -->
+  <circle cx="16" cy="21" r="8.5" fill="#f9f6e2" stroke="#3e2d12" stroke-width="2.2"/>
+  <!-- חוגה עם סימנים -->
+  <circle cx="16" cy="21" r="4.5" fill="#e3d6b2" stroke="#3e2d12" stroke-width="1.4"/>
+  <!-- סימנים בחוגה -->
+  <circle cx="16" cy="18.5" r="0.7" fill="#3e2d12"/>
+  <circle cx="13.8" cy="19.5" r="0.7" fill="#3e2d12"/>
+  <circle cx="13.2" cy="22" r="0.7" fill="#3e2d12"/>
+  <circle cx="14.5" cy="24" r="0.7" fill="#3e2d12"/>
+  <circle cx="17.5" cy="24" r="0.7" fill="#3e2d12"/>
+  <circle cx="18.8" cy="22" r="0.7" fill="#3e2d12"/>
+  <circle cx="18.2" cy="19.5" r="0.7" fill="#3e2d12"/>
+  <!-- מרכז חוגה -->
+  <circle cx="16" cy="21" r="1" fill="#3e2d12"/>
+</svg>
+  </span>
+</button>
+<button class="sidebar-icon message" title="שלח הודעה" onclick="${ad.email ? `window.location.href='mailto:${ad.email}'` : ''}">
+  <span aria-hidden="true">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="display:block" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#3e2d12" stroke-width="2" fill="#f9f6e2">
+        <rect x="6" y="8" width="20" height="16" rx="3" fill="#f9f6e2"/>
+        <polyline points="8,10 16,18 24,10" fill="none"/>
+      </g>
+    </svg>
+  </span>
+</button>
+<button class="sidebar-icon link" title="לאתר" onclick="if('${ad.link}') window.open('${ad.link}','_blank')">
+  <span aria-hidden="true">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="display:block" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#3e2d12" stroke-width="2" fill="none">
+        <circle cx="16" cy="16" r="11" fill="#f9f6e2"/>
+        <ellipse cx="16" cy="16" rx="6" ry="11" fill="none"/>
+        <ellipse cx="16" cy="16" rx="11" ry="6" fill="none"/>
+      </g>
+    </svg>
+  </span>
+</button>
+<button class="sidebar-icon location" title="מיקום" onclick="alert('עיר: ${ad.city || ''}${ad.neighborhood ? ' | שכונה: ' + ad.neighborhood : ''}')">
+  <span aria-hidden="true">
+    <!-- בועת מיקום קלאסית -->
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="display:block" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#3e2d12" stroke-width="2" fill="#f9f6e2">
+        <path d="M16 5c5 0 9 4 9 9 0 7.5-9 13-9 13s-9-5.5-9-13c0-5 4-9 9-9z"/>
+        <circle cx="16" cy="14" r="3.2" fill="#e3d6b2" stroke="#3e2d12" stroke-width="1.2"/>
+      </g>
+    </svg>
+  </span>
+</button>
+</div>
       `;
       board.appendChild(el);
     });
@@ -781,12 +1191,13 @@
       }
       el.innerHTML = `
         ${imgHtml}
-        <div class=\"ad-content\">${ad.content || ad.title || ''}</div>
-        <div class=\"ad-dynamic\">${dynamicHtml}</div>
-        <div class=\"ad-actions\">
-          <button class=\"ad-btn whatsapp\">📞 ${ad.phone || ''} ${ad.whatsapp ? '<span>וואטסאפ</span>' : ''}</button>
-          ${ad.link ? `<button class=\"ad-btn link\" onclick=\"window.open('${ad.link}','_blank')\">🔗 קישור</button>` : ''}
-          ${ad.email ? `<button class=\"ad-btn email\" onclick=\"window.location.href='mailto:${ad.email}'\">✉️ שלח הודעה</button>` : ''}
+        <div class="ad-content">${ad.content || ad.title || ''}</div>
+        <div class="ad-dynamic">${dynamicHtml}</div>
+        <div class="ad-sidebar">
+          <button class="sidebar-icon phone" title="התקשר" onclick="${ad.phone ? `window.open('tel:${ad.phone}')` : ''}"><span>📞</span></button>
+          <button class="sidebar-icon message" title="שלח הודעה" onclick="${ad.email ? `window.location.href='mailto:${ad.email}'` : ''}"><span>✉️</span></button>
+          <button class="sidebar-icon link" title="לאתר" onclick="${ad.link ? `window.open('${ad.link}','_blank')` : ''}"><span>🔗</span></button>
+          <button class="sidebar-icon location" title="מיקום" onclick="alert('עיר: ${ad.city || ''}${ad.neighborhood ? ' | שכונה: ' + ad.neighborhood : ''}')"><span>📍</span></button>
         </div>
       `;
       board.appendChild(el);
@@ -860,54 +1271,16 @@ function renderCategoriesMenu() {
 
 
 
-  // Add each category to the menu
-  categoriesSource.forEach(catName => {
-    const catData = window.categoriesData.find(c => c.name === catName) || {};
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = `#${encodeURIComponent(catName)}`;
-    a.className = 'category-link';
-    a.style.backgroundColor = catData.color || '#f0f0f0';
-    a.style.color = catData.textColor || '#333';
-    a.innerHTML = `
-      <span class="category-icon">${catData.icon || '📌'}</span>
-      <span class="category-name">${catName}</span>
-    `;
-    li.appendChild(a);
-    menu.appendChild(li);
-  });
-
-  // Add click handler for category links
-  document.querySelectorAll('.category-link').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      // Update active state
-      document.querySelectorAll('.category-link').forEach(el => {
-        el.style.backgroundColor = '';
-        el.style.color = '';
-      });
-      
-      const clickedLink = e.currentTarget;
-      clickedLink.style.backgroundColor = '#0099cc';
-      clickedLink.style.color = 'white';
-      
-
-      
-      // Otherwise, scroll to the selected category
-      const categoryName = clickedLink.querySelector('.category-name').textContent;
-      const element = document.getElementById(encodeURIComponent(categoryName));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
-
+  // הוספת הקטגוריות לתפריט
   let first = true;
-  categoriesSource.forEach(cat => {
-    if (!catsWithAds.has(cat.name)) return;
+  categoriesSource.forEach(catName => {
+    // הצג רק קטגוריות שיש להן מודעות בפועל
+    if (!adsByCat[catName] || !adsByCat[catName].length) return;
+    const cat = window.categoriesData.find(c => c.name === catName) || {};
+
+    
     const li = document.createElement('li');
-    li.innerHTML = `<span style='font-size:20px;margin-left:6px;'>${cat.icon||''}</span><span>${cat.name}</span>`;
+    li.innerHTML = `<span style='font-size:20px;margin-left:6px;'>${cat.icon||'📌'}</span><span>${catName}</span>`;
     li.style.padding = '10px 8px';
     li.style.marginBottom = '6px';
     li.style.borderRadius = '8px';
@@ -915,9 +1288,11 @@ function renderCategoriesMenu() {
     li.style.display = 'flex';
     li.style.alignItems = 'center';
     li.style.transition = 'background 0.2s, color 0.2s';
-    li.dataset.cat = cat.name;
+    li.dataset.cat = catName;
     li.dataset.bg = cat.color+'22';
     li.dataset.color = cat.color;
+    
+    // סגנון לקטגוריה הפעילה
     if (first) {
       li.classList.add('active');
       li.style.background = cat.color+'22';
@@ -925,6 +1300,8 @@ function renderCategoriesMenu() {
       li.style.fontWeight = 'bold';
       first = false;
     }
+    
+    // טיפול בלחיצה על קטגוריה
     li.onclick = function() {
       ul.querySelectorAll('li').forEach(el => {
         el.classList.remove('active');
@@ -948,7 +1325,10 @@ function renderCategoriesMenu() {
     ul.appendChild(li);
   });
 }
-document.addEventListener('DOMContentLoaded', renderCategoriesMenu);
+document.addEventListener('DOMContentLoaded', function() {
+  loadCurrentWeeklyIssue();
+  renderCategoriesMenu();
+});
 // רענון התפריט בכל שינוי במודעות
 window.addEventListener('storage', renderCategoriesMenu);
 
@@ -1020,5 +1400,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
+  <script src="location-tooltip.js"></script>
 </body>
 </html>
